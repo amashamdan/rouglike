@@ -2,6 +2,9 @@
  * In this file you should write your main styles. (or centralize your imports)
  * Import this file using the following HTML or equivalent:
  * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
+$maze-color: gray;
+$maze-border-color: black;
+$room-color: white;
 
 #container {
 	width: 1100px;
@@ -24,11 +27,29 @@
 	text-align: center;
 }
 
-.maze {
-	width: 1000px;
-	height: 500px;
-	background-color: gray;
+#maze {
+	width: 900px;
+	height: 900px;
 	margin: 0 auto;
+	display: flex;
+	flex-wrap: wrap;
+	overflow-y: hidden;
+	border: 5px solid $maze-border-color;
+}
+
+@mixin cell($color) {
+	width: 15px;
+	height: 15px;
+	background-color: $color;
+}
+
+.empty {
+	@include cell($maze-color);
+	font-size: 5px;
+}
+
+.room, .passage {
+	@include cell($room-color);
 }
 
 .footer {
