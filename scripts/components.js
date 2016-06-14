@@ -34,7 +34,6 @@ var Maze = React.createClass({
 	render: function() {
 		return (
 			<div className="maze">
-				GAME AREA HERE
 			</div>
 		);
 	}

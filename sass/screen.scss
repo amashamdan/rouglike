@@ -3,3 +3,38 @@
  * Import this file using the following HTML or equivalent:
  * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
 
+#container {
+	width: 1100px;
+	margin: 0 auto;
+	font-family: 'Titillium Web', sans-serif;
+	h3 {
+		text-align: center;
+	}
+}
+
+.controls {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	margin: 0 0 20px 0;
+}
+
+.control {
+	width: 12.5%;
+	text-align: center;
+}
+
+.maze {
+	width: 1000px;
+	height: 500px;
+	background-color: gray;
+	margin: 0 auto;
+}
+
+.footer {
+	font-size: 0.75em;
+	color: gray;
+	a {
+		color: gray;
+	}
+}
