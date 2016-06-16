@@ -44,6 +44,10 @@ var Dashboard = React.createClass({
 /* Maze component is contains the maze (all game elements.). */
 var Maze = React.createClass({
 	getInitialState: function() {
+		var squares = this.generateGrid();
+		return ({squares: squares});
+	},
+	generateGrid: function() {
 		var width = 60;
 		var height = 60;
 		var squares = [];	
@@ -244,7 +248,7 @@ var Maze = React.createClass({
 			}
 		}	
 		*/		
-		return ({squares: squares});
+		return squares;
 	},
 	/*componentDidMount: function() {
 		console.log("FFF");
