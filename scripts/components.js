@@ -47,16 +47,7 @@ var Maze = React.createClass({
 		var width = 60;
 		var height = 60;
 		var squares = this.generateGrid(width, height);
-
-		var c = true;
-		while (c) {
-			var pxposition = Math.floor(Math.random() * width);
-			var pyposition = Math.floor(Math.random() * height);
-			if (squares[pxposition][pyposition].props.className == "room") {
-				squares[pxposition].splice(pyposition, 1, <div key={[pxposition, pyposition]} className="player"></div>);
-				c = false;
-			}
-		}
+		squares = this.generatePlayer(squares, width, height);
 
 		return ({squares: squares});
 	},
@@ -67,7 +58,7 @@ var Maze = React.createClass({
 		}
 		for (var i = 0; i < width; i++) {
 			for (var k = 0; k < height; k++) {
-				squares[i].push(<div key={[i, k]} className="empty">{i}, {k}</div>)
+				squares[i].push(<div key={[i, k]} className="wall">{i}, {k}</div>)
 			}
 		}
 
@@ -104,10 +95,10 @@ var Maze = React.createClass({
 		for (var point in passages) {
 			squares[passages[point][0]].splice(passages[point][1], 1, <div key={[passages[point][0], passages[point][1]]} className="passage"></div>);
 		}
-		/* A METHOD FOR GENERATING GRID 
+		/* A METHOD FOR RANDOMLY GENERATING GRID 
 		for (var i = 1; i < squares.length - 1; i++) {
 			for (var k = 1; k < squares[i].length - 1; k++) {
-				if (squares[i][k].props.className == "empty" && squares[i][k-1].props.className == "empty" && squares[i][k+1].props.className == "empty" && squares[i-1][k].props.className == "empty" && squares[i+1][k].props.className == "empty" && squares[i-1][k-1].props.className == "empty" && squares[i-1][k+1].props.className == "empty" && squares[i+1][k-1].props.className == "empty" && squares[i+1][k+1].props.className == "empty") {
+				if (squares[i][k].props.className == "wall" && squares[i][k-1].props.className == "wall" && squares[i][k+1].props.className == "wall" && squares[i-1][k].props.className == "wall" && squares[i+1][k].props.className == "wall" && squares[i-1][k-1].props.className == "wall" && squares[i-1][k+1].props.className == "wall" && squares[i+1][k-1].props.className == "wall" && squares[i+1][k+1].props.className == "wall") {
 					var roomWidth = Math.floor(Math.random() * 5 + 5);
 					var roomHeight = Math.floor(Math.random() * 5 + 5);
 					if (i + roomHeight < height && k + roomWidth < width) {
@@ -134,103 +125,8 @@ var Maze = React.createClass({
 				}
 			}
 		}*/
-		/* ANOTHER METHOD
-		var grid = [[5,5], [5, 15], [5, 25], [5, 35], [5, 45], [5, 55],
-					[15,5], [15, 15], [15, 25], [15, 35], [15, 45], [15, 55],
-					[25,5], [25, 15], [25, 25], [25, 35], [25, 45], [25, 55],
-					[35,5], [35, 15], [35, 25], [35, 35], [35, 45], [35, 55],
-					[45,5], [45, 15], [45, 25], [45, 35], [45, 45], [45, 55],
-					[55,5], [55, 15], [55, 25], [55, 35], [55, 45], [55, 55]];
-
-		for (var point in grid) {
-			var roomWidth = Math.floor(Math.random() * 2 + 3);
-			var roomHeight = Math.floor(Math.random() * 2 + 3); 
-			for (var i = grid[point][0] - roomHeight; i < grid[point][0] + roomHeight; i++) {
-				for (var k = grid[point][1] - roomWidth; k < grid[point][1] + roomWidth; k++) {
-					squares[i].splice(k, 1, <div key={[i, k]} className="room"></div>);
-				}
-			}
-		}
-
-		for (var point in grid) {
-			if (grid[point][0] == 5 && grid[point][1] == 5) { /* grid[point] == [5,5] doesn't work */
-		/*		if (Math.random() > 0.5) {
-					for (var k = 5; k < 15; k++) {
-						squares[5].splice(k, 1, <div key={[5, k]} className="room"></div>);		
-					}
-				}
-				if (Math.random() > 0.5) {
-					for (var i = 5; i < 15; i++) {
-						squares[i].splice(5, 1, <div key={[i, 5]} className="room"></div>);		
-					}
-				}
-			} else if (grid[point][0] == 5 && grid[point][1] == 55) {
-				if (Math.random() > 0.5) {
-					for (var k = 55; k > 45; k--) {
-						squares[5].splice(k, 1, <div key={[5, k]} className="room"></div>);		
-					}
-				}
-				if (Math.random() > 0.5) {
-					for (var i = 5; i < 15; i++) {
-						squares[i].splice(55, 1, <div key={[i, 55]} className="room"></div>);		
-					}
-				}
-			} else if (grid[point][0] == 55 && grid[point][1] == 5){
-				if (Math.random() > 0.5) {
-					for (var k = 5; k < 15; k++) {
-						squares[55].splice(k, 1, <div key={[5, k]} className="room"></div>);		
-					}
-				}
-				if (Math.random() > 0.5) {
-					for (var i = 55; i > 45; i--) {
-						squares[i].splice(5, 1, <div key={[i, 5]} className="room"></div>);		
-					}
-				}
-			} else if (grid[point] == [55, 55]) {
-				if (Math.random() > 0.5) {
-					for (var k = 55; k > 45; k--) {
-						squares[55].splice(k, 1, <div key={[55, k]} className="room"></div>);		
-					}
-				}
-				if (Math.random() > 0.5) {
-					for (var i = 55; i > 45; i--) {
-						squares[i].splice(55, 1, <div key={[i, 55]} className="room"></div>);		
-					}
-				}
-			} else if (grid[point][0] == 5) {
-				if (Math.random() > 0.5) {
-					for (var k = grid[point][1]; k < grid[point][1] + 10; k++) { /* right */
-			/*			squares[5].splice(k, 1, <div key={[5, k]} className="room"></div>);		
-					}
-				}
-				if (Math.random() > 0.5) { /* down */
-			/*		for (var i = 5; i < 15; i++) {
-						squares[i].splice(grid[point][1], 1, <div key={[i, grid[point][1]]} className="room"></div>);		
-					}
-				}
-				if (Math.random() > 0.5) {
-					for (var k = grid[point][1]; k < grid[point][1] - 15; k--) { /* right */
-			/*			squares[5].splice(k, 1, <div key={[5, k]} className="room"></div>);		
-					}
-				}
-			} else if (grid[point][0] == 55) {
-
-			} else if (grid[point][1] == 5) {
-
-			} else if (grid[point][1] == 55) {
-
-			} else {
-
-			}
-		}*/
-
-
-
-		/* irrelevant to any method
-		if (squares[5][5].props.className == "room") {
-			console.log("Room detected");
-		}*/
-		/* ANOTHER METHOD
+		
+		/* ANOTHER METHOD FOR RANDOM GENERATION
 		var counter = 40;
 		while (counter >= 0) {
 			var startPointX = Math.floor(Math.random() * 60);
@@ -259,6 +155,24 @@ var Maze = React.createClass({
 			}
 		}	
 		*/		
+		return squares;
+	},
+	generatePlayer: function(squares, width, height) {
+		var condition = true;
+		var dd = document.getElementById("maze");
+		while (condition) {
+			var playerXPosition = Math.floor(Math.random() * width);
+			var playerYPosition = Math.floor(Math.random() * height);
+			if (squares[playerXPosition][playerYPosition].props.className == "room") {
+				squares[playerXPosition].splice(playerYPosition, 1, <div key={[playerXPosition, playerYPosition]} className="player"></div>);
+				condition = false;
+			}
+		}
+		if (playerXPosition > 15) {
+			window.onload = function() {
+				document.getElementById("maze").scrollTop = (playerXPosition - 15) * 15;
+			}
+		}
 		return squares;
 	},
 	/*componentDidMount: function() {
