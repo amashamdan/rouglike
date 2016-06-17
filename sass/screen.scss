@@ -5,7 +5,12 @@
 $maze-color: gray;
 $maze-border-color: black;
 $room-color: white;
+$passage-color: white;
 $player-color: red;
+$enemy-color: black;
+$health-color: green;
+$weapon-color: orange;
+$stairs-color: #A020F0;
 
 #container {
 	width: 1100px;
@@ -49,12 +54,15 @@ $player-color: red;
 	font-size: 5px;
 }
 
-.room, .passage {
-	@include cell($room-color);
-}
+$items: room passage player enemy health stairs weapon;
+$colors: $room-color $passage-color $player-color $enemy-color $health-color $stairs-color $weapon-color;
 
-.player {
-	@include cell($player-color);
+$items-colors: zip($items, $colors);
+
+@each $item in $items-colors {
+	.#{nth($item, 1)} {
+		@include cell(nth($item, 2));
+	}
 }
 
 .footer {
