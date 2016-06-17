@@ -2,18 +2,18 @@
  * In this file you should write your main styles. (or centralize your imports)
  * Import this file using the following HTML or equivalent:
  * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
-/* line 9, ../sass/screen.scss */
+/* line 10, ../sass/screen.scss */
 #container {
   width: 1100px;
   margin: 0 auto;
   font-family: 'Titillium Web', sans-serif;
 }
-/* line 13, ../sass/screen.scss */
+/* line 14, ../sass/screen.scss */
 #container h3 {
   text-align: center;
 }
 
-/* line 18, ../sass/screen.scss */
+/* line 19, ../sass/screen.scss */
 .controls {
   display: flex;
   flex-wrap: wrap;
@@ -21,16 +21,16 @@
   margin: 0 0 20px 0;
 }
 
-/* line 25, ../sass/screen.scss */
+/* line 26, ../sass/screen.scss */
 .control {
   width: 12.5%;
   text-align: center;
 }
 
-/* line 30, ../sass/screen.scss */
+/* line 31, ../sass/screen.scss */
 #maze {
   width: 900px;
-  height: 900px;
+  height: 450px;
   margin: 0 auto;
   display: flex;
   flex-wrap: wrap;
@@ -38,7 +38,7 @@
   border: 5px solid black;
 }
 
-/* line 46, ../sass/screen.scss */
+/* line 47, ../sass/screen.scss */
 .empty {
   width: 15px;
   height: 15px;
@@ -46,19 +46,26 @@
   font-size: 5px;
 }
 
-/* line 51, ../sass/screen.scss */
+/* line 52, ../sass/screen.scss */
 .room, .passage {
   width: 15px;
   height: 15px;
   background-color: white;
 }
 
-/* line 55, ../sass/screen.scss */
+/* line 56, ../sass/screen.scss */
+.player {
+  width: 15px;
+  height: 15px;
+  background-color: red;
+}
+
+/* line 60, ../sass/screen.scss */
 .footer {
   font-size: 0.75em;
   color: gray;
 }
-/* line 58, ../sass/screen.scss */
+/* line 63, ../sass/screen.scss */
 .footer a {
   color: gray;
 }
