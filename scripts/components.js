@@ -19,10 +19,10 @@ var Dashboard = React.createClass({
 		//document.getElementById("maze").scrollTop = 10;
 	},
 	scrollDown: function() {
-		document.getElementById("maze").scrollTop = 375;
+		document.getElementById("maze").scrollTop = 450;
 	},
 	scrollUp: function() {
-		document.getElementById("maze").scrollTop = -375;
+		document.getElementById("maze").scrollTop = -450;
 	},
 	render: function() {
 		return (
@@ -44,12 +44,23 @@ var Dashboard = React.createClass({
 /* Maze component is contains the maze (all game elements.). */
 var Maze = React.createClass({
 	getInitialState: function() {
-		var squares = this.generateGrid();
-		return ({squares: squares});
-	},
-	generateGrid: function() {
 		var width = 60;
 		var height = 60;
+		var squares = this.generateGrid(width, height);
+
+		var c = true;
+		while (c) {
+			var pxposition = Math.floor(Math.random() * width);
+			var pyposition = Math.floor(Math.random() * height);
+			if (squares[pxposition][pyposition].props.className == "room") {
+				squares[pxposition].splice(pyposition, 1, <div key={[pxposition, pyposition]} className="player"></div>);
+				c = false;
+			}
+		}
+
+		return ({squares: squares});
+	},
+	generateGrid: function(width, height) {
 		var squares = [];	
 		for (var i = 0; i < width; i++) {
 			squares.push([]);
