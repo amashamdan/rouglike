@@ -49,12 +49,51 @@ var Maze = React.createClass({
 		var squares = this.generateGrid(width, height);
 		var elements = ["player", "stairs", "weapon"];
 		for (var element in elements) {
-			squares = this.generateItem(squares, width, height, elements[element]);	
+			var itemData = this.generateItem(squares, width, height, elements[element]);
+			squares = itemData[0];
+			if (elements[element] == "player"){
+				var playerPosition = itemData[1];
+			}
 		}
 		squares = this.generateEnemies(squares, width,height);
 		squares = this.generateHealth(squares, width,height);
 
-		return ({squares: squares});
+		return ({squares: squares, playerPosition: playerPosition});
+	},
+	componentDidMount: function() {
+		window.addEventListener('keydown', this.handlepress);
+	},
+	handlepress: function(e) {
+		var squares = this.state.squares;
+		var playerXPosition = this.state.playerPosition[0];
+		var playerYPosition = this.state.playerPosition[1];
+		if (e.code == "ArrowUp") {
+			if (this.state.squares[this.state.playerPosition[0] - 1][this.state.playerPosition[1]].props.className == "room") {
+				squares = this.movePlayer(squares, playerXPosition, playerYPosition, playerXPosition - 1, playerYPosition);
+				playerXPosition--;
+			}
+		} else if (e.code == "ArrowDown") {
+			if (this.state.squares[this.state.playerPosition[0] + 1][this.state.playerPosition[1]].props.className == "room") {
+				squares = this.movePlayer(squares, playerXPosition, playerYPosition, playerXPosition + 1, playerYPosition);
+				playerXPosition++;
+			}
+		} else if (e.code == "ArrowLeft") {
+			if (this.state.squares[this.state.playerPosition[0]][this.state.playerPosition[1] - 1].props.className == "room") {
+				squares = this.movePlayer(squares, playerXPosition, playerYPosition, playerXPosition, playerYPosition - 1);
+				playerYPosition--;
+			}
+		} else if (e.code == "ArrowRight") {
+			if (this.state.squares[this.state.playerPosition[0]][this.state.playerPosition[1] + 1].props.className == "room") {
+				squares = this.movePlayer(squares, playerXPosition, playerYPosition, playerXPosition, playerYPosition + 1);
+				playerYPosition++;
+			}
+		}
+		this.setState({squares: squares, playerPosition: [playerXPosition, playerYPosition]});
+	},
+	movePlayer: function(squares, playerXPosition, playerYPosition, newXPosition, newYPosition) {
+		squares[playerXPosition].splice(playerYPosition, 1, <div key={[playerXPosition, playerYPosition]} className="room"></div>);
+		squares[newXPosition].splice(newYPosition, 1, <div key={[newXPosition, newYPosition]} className="player"></div>);
+		return squares;
 	},
 	generateGrid: function(width, height) {
 		var squares = [];	
@@ -98,7 +137,7 @@ var Maze = React.createClass({
 
 		var passages = [[5, 13], [13, 5], [12, 13], [9,24], [20, 17], [10, 30], [9, 45], [15, 32], [15, 44], [27, 41], [30, 37], [19, 24], [39, 37], [32, 24], [37, 15], [44, 16], [49, 30], [45, 37], [43, 50], [54, 50]];
 		for (var point in passages) {
-			squares[passages[point][0]].splice(passages[point][1], 1, <div key={[passages[point][0], passages[point][1]]} className="passage"></div>);
+			squares[passages[point][0]].splice(passages[point][1], 1, <div key={[passages[point][0], passages[point][1]]} className="room"></div>);
 		}
 		/* A METHOD FOR RANDOMLY GENERATING GRID 
 		for (var i = 1; i < squares.length - 1; i++) {
@@ -175,6 +214,8 @@ var Maze = React.createClass({
 							document.getElementById("maze").scrollTop = (xPosition - 15) * 15;
 						}
 					}
+					var playerXPosition = xPosition; //because xPosition will be overridden for weapon and stairs genetaion
+					var playerYPosition = yPosition;
 				} else if (item == "stairs") {
 					squares[xPosition].splice(yPosition, 1, <div key={[xPosition, yPosition]} className="stairs"></div>);
 				} else if (item == "weapon") {
@@ -183,8 +224,7 @@ var Maze = React.createClass({
 				condition = false;
 			}
 		}
-
-		return squares;
+		return [squares, [playerXPosition, playerYPosition]];
 	},
 	generateEnemies: function(squares, width, height) {
 		var enemiesToPlace = 5;
