@@ -44,7 +44,7 @@ $player-color: red;
 	background-color: $color;
 }
 
-.empty {
+.wall {
 	@include cell($maze-color);
 	font-size: 5px;
 }
