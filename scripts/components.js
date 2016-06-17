@@ -47,9 +47,12 @@ var Maze = React.createClass({
 		var width = 60;
 		var height = 60;
 		var squares = this.generateGrid(width, height);
-		squares = this.generatePlayer(squares, width, height);
+		var elements = ["player", "stairs", "weapon"];
+		for (var element in elements) {
+			squares = this.generateItem(squares, width, height, elements[element]);	
+		}
 		squares = this.generateEnemies(squares, width,height);
-		squares = this.generateHealth
+		squares = this.generateHealth(squares, width,height);
 
 		return ({squares: squares});
 	},
@@ -159,21 +162,28 @@ var Maze = React.createClass({
 		*/		
 		return squares;
 	},
-	generatePlayer: function(squares, width, height) {
+	generateItem: function(squares, width, height, item) {
 		var condition = true;
 		while (condition) {
-			var playerXPosition = Math.floor(Math.random() * width);
-			var playerYPosition = Math.floor(Math.random() * height);
-			if (squares[playerXPosition][playerYPosition].props.className == "room") {
-				squares[playerXPosition].splice(playerYPosition, 1, <div key={[playerXPosition, playerYPosition]} className="player"></div>);
+			var xPosition = Math.floor(Math.random() * width);
+			var yPosition = Math.floor(Math.random() * height);
+			if (squares[xPosition][yPosition].props.className == "room") {
+				if (item == "player") {
+					squares[xPosition].splice(yPosition, 1, <div key={[xPosition, yPosition]} className="player"></div>);
+					if (xPosition > 15) {
+						window.onload = function() {
+							document.getElementById("maze").scrollTop = (xPosition - 15) * 15;
+						}
+					}
+				} else if (item == "stairs") {
+					squares[xPosition].splice(yPosition, 1, <div key={[xPosition, yPosition]} className="stairs"></div>);
+				} else if (item == "weapon") {
+					squares[xPosition].splice(yPosition, 1, <div key={[xPosition, yPosition]} className="weapon"></div>);
+				}
 				condition = false;
 			}
 		}
-		if (playerXPosition > 15) {
-			window.onload = function() {
-				document.getElementById("maze").scrollTop = (playerXPosition - 15) * 15;
-			}
-		}
+
 		return squares;
 	},
 	generateEnemies: function(squares, width, height) {
@@ -184,6 +194,18 @@ var Maze = React.createClass({
 			if (squares[enemyXPosition][enemyYPosition].props.className == "room") {
 				squares[enemyXPosition].splice(enemyYPosition, 1, <div key={[enemyXPosition, enemyYPosition]} className="enemy"></div>);
 				enemiesToPlace--;
+			}
+		}
+		return squares;
+	},
+	generateHealth: function(squares, width, height) {
+		var healthToPlace = 5;
+		while (healthToPlace > 0) {
+			var healthXPosition = Math.floor(Math.random() * width);
+			var healthYPosition = Math.floor(Math.random() * height);
+			if (squares[healthXPosition][healthYPosition].props.className == "room") {
+				squares[healthXPosition].splice(healthYPosition, 1, <div key={[healthXPosition, healthYPosition]} className="health"></div>);
+				healthToPlace--;
 			}
 		}
 		return squares;
