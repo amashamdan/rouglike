@@ -48,6 +48,8 @@ var Maze = React.createClass({
 		var height = 60;
 		var squares = this.generateGrid(width, height);
 		squares = this.generatePlayer(squares, width, height);
+		squares = this.generateEnemies(squares, width,height);
+		squares = this.generateHealth
 
 		return ({squares: squares});
 	},
@@ -159,7 +161,6 @@ var Maze = React.createClass({
 	},
 	generatePlayer: function(squares, width, height) {
 		var condition = true;
-		var dd = document.getElementById("maze");
 		while (condition) {
 			var playerXPosition = Math.floor(Math.random() * width);
 			var playerYPosition = Math.floor(Math.random() * height);
@@ -175,10 +176,18 @@ var Maze = React.createClass({
 		}
 		return squares;
 	},
-	/*componentDidMount: function() {
-		console.log("FFF");
-		document.getElementById("maze").scrollTop = 500;
-	},*/
+	generateEnemies: function(squares, width, height) {
+		var enemiesToPlace = 5;
+		while (enemiesToPlace > 0) {
+			var enemyXPosition = Math.floor(Math.random() * width);
+			var enemyYPosition = Math.floor(Math.random() * height);
+			if (squares[enemyXPosition][enemyYPosition].props.className == "room") {
+				squares[enemyXPosition].splice(enemyYPosition, 1, <div key={[enemyXPosition, enemyYPosition]} className="enemy"></div>);
+				enemiesToPlace--;
+			}
+		}
+		return squares;
+	},
 	render: function() {
 		return (
 			<div id="maze">
