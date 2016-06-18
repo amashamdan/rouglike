@@ -71,11 +71,18 @@ var Maze = React.createClass({
 			if (this.state.squares[this.state.playerPosition[0] - 1][this.state.playerPosition[1]].props.className == "room") {
 				squares = this.movePlayer(squares, playerXPosition, playerYPosition, playerXPosition - 1, playerYPosition);
 				playerXPosition--;
+				if (playerXPosition < 45) {	
+					/* must be -= 15 (not = -15). setting it to -15 means you're positiong at a fixed value. -=15 means you're taking the current poistion and moving 15 from there. */
+					document.getElementById("maze").scrollTop -= 15;
+				}
 			}
 		} else if (e.code == "ArrowDown") {
 			if (this.state.squares[this.state.playerPosition[0] + 1][this.state.playerPosition[1]].props.className == "room") {
 				squares = this.movePlayer(squares, playerXPosition, playerYPosition, playerXPosition + 1, playerYPosition);
 				playerXPosition++;
+				if (playerXPosition > 15) {
+					document.getElementById("maze").scrollTop += 15;
+				}
 			}
 		} else if (e.code == "ArrowLeft") {
 			if (this.state.squares[this.state.playerPosition[0]][this.state.playerPosition[1] - 1].props.className == "room") {
