@@ -1,17 +1,23 @@
 /* GameArea component is the parent div, it has 3 children components: Dashboard, Maze, Information. */
+
+/* weapons = [knife, sword, gun, rifle, machine gun]*/
+
 var GameArea = React.createClass({
 	getInitialState: function() {
-		return ({health: 100});
+		return ({health: 100, weapons: ["Knife", "Sword", "Gun", "Rifle", "Machine gun"], dungeon: 0, weaponCounter: 0});
 	},
 	increaseHealth: function() {
 		this.setState({health: this.state.health + 20});
+	},
+	upgradeWeapon: function() {
+		this.setState({weaponCounter: this.state.weaponCounter + 1})
 	},
 	render: function() {
 		return (
 			<div>
 				<h3>Roguelike Dungeon Crawler (ReactJS & Sass)</h3>
-				<Dashboard health={this.state.health} />
-				<Maze increaseHealth={this.increaseHealth} />
+				<Dashboard health={this.state.health} weapon={this.state.weapons[this.state.weaponCounter]} dungeon={this.state.dungeon} />
+				<Maze increaseHealth={this.increaseHealth} upgradeWeapon={this.upgradeWeapon} />
 				<Information />
 			</div>
 		);
@@ -34,11 +40,11 @@ var Dashboard = React.createClass({
 		return (
 			<div className="controls">
 				<div className="control">Health: {this.props.health}</div>
-				<div className="control">Weapon: Stick</div>
+				<div className="control">Weapon: {this.props.weapon}</div>
 				<div className="control">Attack: 7</div>
 				<div className="control">Level: 0</div>
 				<div className="control">XP to next level: 60</div>
-				<div className="control">Dungeon: 0</div>
+				<div className="control">Dungeon: {this.props.dungeon}</div>
 				<button>Turn lights on</button>
 				<button onClick={this.scrollUp}>Scroll Up</button>
 				<button onClick={this.scrollDown}>Scroll Down</button>
@@ -80,7 +86,7 @@ var Maze = React.createClass({
 			var possibleNewXPosition = playerXPosition - 1;
 			var possibleNewYPosition = playerYPosition;
 			newPositionType = this.state.squares[possibleNewXPosition][possibleNewYPosition].props.className;
-			if (newPositionType == "room" || newPositionType == "health") {
+			if (newPositionType == "room" || newPositionType == "health" || newPositionType == "weapon") {
 				if (playerXPosition < 45) {	
 					/* must be -= 15 (not = -15). setting it to -15 means you're positiong at a fixed value. -=15 means you're taking the current poistion and moving 15 from there. */
 					document.getElementById("maze").scrollTop -= 15;
@@ -90,7 +96,7 @@ var Maze = React.createClass({
 			var possibleNewXPosition = playerXPosition + 1;
 			var possibleNewYPosition = playerYPosition;
 			newPositionType = this.state.squares[possibleNewXPosition][possibleNewYPosition].props.className;
-			if (newPositionType == "room" || newPositionType == "health") {
+			if (newPositionType == "room" || newPositionType == "health" || newPositionType == "weapon") {
 				if (playerXPosition > 15) {
 					document.getElementById("maze").scrollTop += 15;
 				}
@@ -104,13 +110,16 @@ var Maze = React.createClass({
 			var possibleNewYPosition = playerYPosition + 1;
 			newPositionType = this.state.squares[possibleNewXPosition][possibleNewYPosition].props.className;
 		}
-		if (newPositionType == "room" || newPositionType == "health") {
+		if (newPositionType == "room" || newPositionType == "health" || newPositionType == "weapon") {
 			squares = this.movePlayer(squares, playerXPosition, playerYPosition, possibleNewXPosition, possibleNewYPosition);
 			newXPosition = possibleNewXPosition;
 			newYPosition = possibleNewYPosition;
 		}
 		if (newPositionType == "health") {
 			this.props.increaseHealth();
+		}
+		if (newPositionType == "weapon") {
+			this.props.upgradeWeapon();
 		}
 		this.setState({squares: squares, playerPosition: [newXPosition, newYPosition]});
 	},
