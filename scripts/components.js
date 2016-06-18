@@ -10,7 +10,6 @@ var GameArea = React.createClass({
 		this.setState({health: this.state.health + 20});
 	},
 	upgradeWeapon: function() {
-		
 		this.setState({selectedWeapon: this.state.weapons[this.state.weaponCounter]});
 	},
 	incrementDungeon: function() {
@@ -128,11 +127,11 @@ var Maze = React.createClass({
 		} else if (newPositionType == "weapon") {
 			this.props.upgradeWeapon();
 		} else if (newPositionType == "stairs") {
+			this.props.incrementDungeon();
 			var newGrid = this.initializeGrid();
 			squares = newGrid[0];
 			newXPosition = newGrid[1][0];
 			newYPosition = newGrid[1][1];
-			this.props.incrementDungeon();
 			document.getElementById("maze").scrollTop = (newXPosition - 15) * 15;
 		}
 		this.setState({squares: squares, playerPosition: [newXPosition, newYPosition]});
@@ -149,7 +148,7 @@ var Maze = React.createClass({
 		}
 		for (var i = 0; i < width; i++) {
 			for (var k = 0; k < height; k++) {
-				squares[i].push(<div key={[i, k]} className="wall">{i}, {k}</div>)
+				squares[i].push(<div key={[i, k]} className="wall"></div>)
 			}
 		}
 
@@ -264,8 +263,7 @@ var Maze = React.createClass({
 					}
 					var playerXPosition = xPosition; //because xPosition will be overridden for weapon and stairs genetaion
 					var playerYPosition = yPosition;
-				/* Here check if dungeon is less than 3 and not 4, because when going to a new dungeon, the grid is built before the dungeon number is updated. checking for dungeon < 4 will give stairs in dungeon 4. */
-				} else if (item == "stairs" && this.props.dungeon < 3) {
+				} else if (item == "stairs" && this.props.dungeon < 4) {
 					squares[xPosition].splice(yPosition, 1, <div key={[xPosition, yPosition]} className="stairs"></div>);
 				} else if (item == "weapon") {
 					squares[xPosition].splice(yPosition, 1, <div key={[xPosition, yPosition]} className="weapon"></div>);
@@ -283,6 +281,19 @@ var Maze = React.createClass({
 			if (squares[enemyXPosition][enemyYPosition].props.className == "room") {
 				squares[enemyXPosition].splice(enemyYPosition, 1, <div key={[enemyXPosition, enemyYPosition]} className="enemy"></div>);
 				enemiesToPlace--;
+			}
+		}
+		/* To generate boss */
+		if (this.props.dungeon == 4) {
+			var bossCondition = true;
+			while (bossCondition) {
+				var bossXPosition = Math.floor(Math.random() * width);
+				var bossYPosition = Math.floor(Math.random() * height);
+				if (squares[bossXPosition][bossYPosition].props.className == "room" && squares[bossXPosition + 1][bossYPosition].props.className == "room" && squares[bossXPosition][bossYPosition + 1].props.className == "room" && squares[bossXPosition + 1][bossYPosition + 1].props.className == "room") {
+					squares[bossXPosition].splice(bossYPosition, 2, <div key={[bossXPosition, bossYPosition]} className="boss"></div>, <div key={[bossXPosition, bossYPosition + 1]} className="boss"></div>);
+					squares[bossXPosition + 1].splice(bossYPosition, 2, <div key={[bossXPosition + 1, bossYPosition]} className="boss"></div>, <div key={[bossXPosition + 1, bossYPosition + 1]} className="boss"></div>);
+					bossCondition = false;
+				}
 			}
 		}
 		return squares;
