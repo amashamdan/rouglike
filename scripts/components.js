@@ -1,11 +1,17 @@
 /* GameArea component is the parent div, it has 3 children components: Dashboard, Maze, Information. */
 var GameArea = React.createClass({
+	getInitialState: function() {
+		return ({health: 100});
+	},
+	increaseHealth: function() {
+		this.setState({health: this.state.health + 20});
+	},
 	render: function() {
 		return (
 			<div>
 				<h3>Roguelike Dungeon Crawler (ReactJS & Sass)</h3>
-				<Dashboard />
-				<Maze />
+				<Dashboard health={this.state.health} />
+				<Maze increaseHealth={this.increaseHealth} />
 				<Information />
 			</div>
 		);
@@ -27,7 +33,7 @@ var Dashboard = React.createClass({
 	render: function() {
 		return (
 			<div className="controls">
-				<div className="control">Health: 100</div>
+				<div className="control">Health: {this.props.health}</div>
 				<div className="control">Weapon: Stick</div>
 				<div className="control">Attack: 7</div>
 				<div className="control">Level: 0</div>
@@ -67,35 +73,46 @@ var Maze = React.createClass({
 		var squares = this.state.squares;
 		var playerXPosition = this.state.playerPosition[0];
 		var playerYPosition = this.state.playerPosition[1];
+		var newXPosition = playerXPosition; //in case the player won't move
+		var newYPosition = playerYPosition; //
+		var newPositionType;
 		if (e.code == "ArrowUp") {
-			if (this.state.squares[this.state.playerPosition[0] - 1][this.state.playerPosition[1]].props.className == "room") {
-				squares = this.movePlayer(squares, playerXPosition, playerYPosition, playerXPosition - 1, playerYPosition);
-				playerXPosition--;
+			var possibleNewXPosition = playerXPosition - 1;
+			var possibleNewYPosition = playerYPosition;
+			newPositionType = this.state.squares[possibleNewXPosition][possibleNewYPosition].props.className;
+			if (newPositionType == "room" || newPositionType == "health") {
 				if (playerXPosition < 45) {	
 					/* must be -= 15 (not = -15). setting it to -15 means you're positiong at a fixed value. -=15 means you're taking the current poistion and moving 15 from there. */
 					document.getElementById("maze").scrollTop -= 15;
 				}
 			}
 		} else if (e.code == "ArrowDown") {
-			if (this.state.squares[this.state.playerPosition[0] + 1][this.state.playerPosition[1]].props.className == "room") {
-				squares = this.movePlayer(squares, playerXPosition, playerYPosition, playerXPosition + 1, playerYPosition);
-				playerXPosition++;
+			var possibleNewXPosition = playerXPosition + 1;
+			var possibleNewYPosition = playerYPosition;
+			newPositionType = this.state.squares[possibleNewXPosition][possibleNewYPosition].props.className;
+			if (newPositionType == "room" || newPositionType == "health") {
 				if (playerXPosition > 15) {
 					document.getElementById("maze").scrollTop += 15;
 				}
 			}
 		} else if (e.code == "ArrowLeft") {
-			if (this.state.squares[this.state.playerPosition[0]][this.state.playerPosition[1] - 1].props.className == "room") {
-				squares = this.movePlayer(squares, playerXPosition, playerYPosition, playerXPosition, playerYPosition - 1);
-				playerYPosition--;
-			}
+			var possibleNewXPosition = playerXPosition;
+			var possibleNewYPosition = playerYPosition - 1;
+			newPositionType = this.state.squares[possibleNewXPosition][possibleNewYPosition].props.className;
 		} else if (e.code == "ArrowRight") {
-			if (this.state.squares[this.state.playerPosition[0]][this.state.playerPosition[1] + 1].props.className == "room") {
-				squares = this.movePlayer(squares, playerXPosition, playerYPosition, playerXPosition, playerYPosition + 1);
-				playerYPosition++;
-			}
+			var possibleNewXPosition = playerXPosition;
+			var possibleNewYPosition = playerYPosition + 1;
+			newPositionType = this.state.squares[possibleNewXPosition][possibleNewYPosition].props.className;
 		}
-		this.setState({squares: squares, playerPosition: [playerXPosition, playerYPosition]});
+		if (newPositionType == "room" || newPositionType == "health") {
+			squares = this.movePlayer(squares, playerXPosition, playerYPosition, possibleNewXPosition, possibleNewYPosition);
+			newXPosition = possibleNewXPosition;
+			newYPosition = possibleNewYPosition;
+		}
+		if (newPositionType == "health") {
+			this.props.increaseHealth();
+		}
+		this.setState({squares: squares, playerPosition: [newXPosition, newYPosition]});
 	},
 	movePlayer: function(squares, playerXPosition, playerYPosition, newXPosition, newYPosition) {
 		squares[playerXPosition].splice(playerYPosition, 1, <div key={[playerXPosition, playerYPosition]} className="room"></div>);
