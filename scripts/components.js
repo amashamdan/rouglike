@@ -10,14 +10,17 @@ var GameArea = React.createClass({
 		this.setState({health: this.state.health + 20});
 	},
 	upgradeWeapon: function() {
-		this.setState({weaponCounter: this.state.weaponCounter + 1})
+		this.setState({weaponCounter: this.state.weaponCounter + 1});
+	},
+	incrementDungeon: function() {
+		this.setState({dungeon: this.state.dungeon + 1});
 	},
 	render: function() {
 		return (
 			<div>
 				<h3>Roguelike Dungeon Crawler (ReactJS & Sass)</h3>
 				<Dashboard health={this.state.health} weapon={this.state.weapons[this.state.weaponCounter]} dungeon={this.state.dungeon} />
-				<Maze increaseHealth={this.increaseHealth} upgradeWeapon={this.upgradeWeapon} />
+				<Maze increaseHealth={this.increaseHealth} upgradeWeapon={this.upgradeWeapon} incrementDungeon={this.incrementDungeon} dungeon={this.state.dungeon} />
 				<Information />
 			</div>
 		);
@@ -56,6 +59,10 @@ var Dashboard = React.createClass({
 /* Maze component is contains the maze (all game elements.). */
 var Maze = React.createClass({
 	getInitialState: function() {
+		var gridData = this.initializeGrid();
+		return ({squares: gridData[0], playerPosition: gridData[1]});
+	},
+	initializeGrid: function() {
 		var width = 60;
 		var height = 60;
 		var squares = this.generateGrid(width, height);
@@ -69,8 +76,7 @@ var Maze = React.createClass({
 		}
 		squares = this.generateEnemies(squares, width,height);
 		squares = this.generateHealth(squares, width,height);
-
-		return ({squares: squares, playerPosition: playerPosition});
+		return [squares, playerPosition];
 	},
 	componentDidMount: function() {
 		window.addEventListener('keydown', this.handlepress);
@@ -117,9 +123,15 @@ var Maze = React.createClass({
 		}
 		if (newPositionType == "health") {
 			this.props.increaseHealth();
-		}
-		if (newPositionType == "weapon") {
+		} else if (newPositionType == "weapon") {
 			this.props.upgradeWeapon();
+		} else if (newPositionType == "stairs") {
+			var newGrid = this.initializeGrid();
+			squares = newGrid[0];
+			newXPosition = newGrid[1][0];
+			newYPosition = newGrid[1][1];
+			this.props.incrementDungeon();
+			document.getElementById("maze").scrollTop = (newXPosition - 15) * 15;
 		}
 		this.setState({squares: squares, playerPosition: [newXPosition, newYPosition]});
 	},
@@ -242,6 +254,7 @@ var Maze = React.createClass({
 			if (squares[xPosition][yPosition].props.className == "room") {
 				if (item == "player") {
 					squares[xPosition].splice(yPosition, 1, <div key={[xPosition, yPosition]} className="player"></div>);
+					/* Moving this to componentDidMount doesn't work, playerPosition wouldn't be defined yet */
 					if (xPosition > 15) {
 						window.onload = function() {
 							document.getElementById("maze").scrollTop = (xPosition - 15) * 15;
@@ -249,7 +262,8 @@ var Maze = React.createClass({
 					}
 					var playerXPosition = xPosition; //because xPosition will be overridden for weapon and stairs genetaion
 					var playerYPosition = yPosition;
-				} else if (item == "stairs") {
+				/* Here check if dungeon is less than 3 and not 4, because when going to a new dungeon, the grid is built before the dungeon number is updated. checking for dungeon < 4 will give stairs in dungeon 4. */
+				} else if (item == "stairs" && this.props.dungeon < 3) {
 					squares[xPosition].splice(yPosition, 1, <div key={[xPosition, yPosition]} className="stairs"></div>);
 				} else if (item == "weapon") {
 					squares[xPosition].splice(yPosition, 1, <div key={[xPosition, yPosition]} className="weapon"></div>);
