@@ -4,22 +4,24 @@
 
 var GameArea = React.createClass({
 	getInitialState: function() {
-		return ({health: 100, weapons: ["Knife", "Sword", "Gun", "Rifle", "Machine gun"], dungeon: 0, weaponCounter: 0});
+		return ({health: 100, weapons: ["Needle", "Knife", "Sword", "Gun", "Rifle", "RBG"], dungeon: 0, weaponCounter: 1, selectedWeapon: "Needle"});
 	},
 	increaseHealth: function() {
 		this.setState({health: this.state.health + 20});
 	},
 	upgradeWeapon: function() {
-		this.setState({weaponCounter: this.state.weaponCounter + 1});
+		
+		this.setState({selectedWeapon: this.state.weapons[this.state.weaponCounter]});
 	},
 	incrementDungeon: function() {
 		this.setState({dungeon: this.state.dungeon + 1});
+		this.setState({weaponCounter: this.state.weaponCounter + 1})
 	},
 	render: function() {
 		return (
 			<div>
 				<h3>Roguelike Dungeon Crawler (ReactJS & Sass)</h3>
-				<Dashboard health={this.state.health} weapon={this.state.weapons[this.state.weaponCounter]} dungeon={this.state.dungeon} />
+				<Dashboard health={this.state.health} weapon={this.state.selectedWeapon} dungeon={this.state.dungeon} />
 				<Maze increaseHealth={this.increaseHealth} upgradeWeapon={this.upgradeWeapon} incrementDungeon={this.incrementDungeon} dungeon={this.state.dungeon} />
 				<Information />
 			</div>
