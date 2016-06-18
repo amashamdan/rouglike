@@ -11,6 +11,7 @@ $enemy-color: black;
 $health-color: green;
 $weapon-color: orange;
 $stairs-color: #A020F0;
+$boss-color: #8B6508;
 
 #container {
 	width: 1100px;
@@ -54,8 +55,8 @@ $stairs-color: #A020F0;
 	font-size: 5px;
 }
 
-$items: room passage player enemy health stairs weapon;
-$colors: $room-color $passage-color $player-color $enemy-color $health-color $stairs-color $weapon-color;
+$items: room passage player enemy health stairs weapon boss;
+$colors: $room-color $passage-color $player-color $enemy-color $health-color $stairs-color $weapon-color $boss-color;
 
 $items-colors: zip($items, $colors);
 
