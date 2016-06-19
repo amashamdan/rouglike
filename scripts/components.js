@@ -1,16 +1,20 @@
 /* GameArea component is the parent div, it has 3 children components: Dashboard, Maze, Information. */
-
-/* weapons = [knife, sword, gun, rifle, machine gun]*/
-
 var GameArea = React.createClass({
 	getInitialState: function() {
-		return ({health: 100, weapons: ["Needle", "Knife", "Sword", "Gun", "Rifle", "RBG"], dungeon: 0, weaponCounter: 1, selectedWeapon: "Needle"});
+		return ({health: 100, weapons: [
+										{name: "Needle", damage: 5},
+										{name: "Knife", damage: 10},
+										{name: "Sword", damage: 15},
+										{name: "Gun", damage: 20},
+										{name: "Rifle", damage: 25},
+										{name: "RBG", damage: 30}],
+				dungeon: 0, weaponCounter: 1, selectedWeapon: "Needle"});
 	},
 	increaseHealth: function() {
 		this.setState({health: this.state.health + 20});
 	},
 	upgradeWeapon: function() {
-		this.setState({selectedWeapon: this.state.weapons[this.state.weaponCounter]});
+		this.setState({selectedWeapon: this.state.weapons[this.state.weaponCounter].name});
 	},
 	incrementDungeon: function() {
 		this.setState({dungeon: this.state.dungeon + 1});
@@ -123,10 +127,16 @@ var Maze = React.createClass({
 			newYPosition = possibleNewYPosition;
 		}
 		if (newPositionType == "health") {
+			var healthAudio = new Audio('sounds/collect-health.wav');
+			healthAudio.play();
 			this.props.increaseHealth();
 		} else if (newPositionType == "weapon") {
+			var weaponAudio = new Audio('sounds/collect-weapon.wav');
+			weaponAudio.play();
 			this.props.upgradeWeapon();
 		} else if (newPositionType == "stairs") {
+			var stairsAudio = new Audio('sounds/stairs.wav');
+			stairsAudio.play();
 			this.props.incrementDungeon();
 			var newGrid = this.initializeGrid();
 			squares = newGrid[0];
