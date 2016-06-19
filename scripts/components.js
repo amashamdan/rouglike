@@ -65,7 +65,7 @@ var Dashboard = React.createClass({
 var Maze = React.createClass({
 	getInitialState: function() {
 		var gridData = this.initializeGrid();
-		return ({squares: gridData[0], playerPosition: gridData[1]});
+		return ({squares: gridData[0], playerPosition: gridData[1], enemies: gridData[2]});
 	},
 	initializeGrid: function() {
 		var width = 60;
@@ -79,9 +79,12 @@ var Maze = React.createClass({
 				var playerPosition = itemData[1];
 			}
 		}
-		squares = this.generateEnemies(squares, width,height);
+		var enemyData = this.generateEnemies(squares, width,height); 
+		squares = enemyData[0];
+		var enemies = enemyData[1];
 		squares = this.generateHealth(squares, width,height);
-		return [squares, playerPosition];
+		console.log(enemies)
+		return [squares, playerPosition, enemies];
 	},
 	componentDidMount: function() {
 		window.addEventListener('keydown', this.handlepress);
@@ -284,12 +287,15 @@ var Maze = React.createClass({
 		return [squares, [playerXPosition, playerYPosition]];
 	},
 	generateEnemies: function(squares, width, height) {
+		var enemies = [];
 		var enemiesToPlace = 5;
 		while (enemiesToPlace > 0) {
 			var enemyXPosition = Math.floor(Math.random() * width);
 			var enemyYPosition = Math.floor(Math.random() * height);
 			if (squares[enemyXPosition][enemyYPosition].props.className == "room") {
 				squares[enemyXPosition].splice(enemyYPosition, 1, <div key={[enemyXPosition, enemyYPosition]} className="enemy"></div>);
+				enemies.push({enemyHealth: (this.props.dungeon+1) * 10 + Math.floor(Math.random() * 5),
+							location: [enemyXPosition, enemyYPosition]});
 				enemiesToPlace--;
 			}
 		}
@@ -306,7 +312,7 @@ var Maze = React.createClass({
 				}
 			}
 		}
-		return squares;
+		return [squares, enemies];
 	},
 	generateHealth: function(squares, width, height) {
 		var healthToPlace = 5;
