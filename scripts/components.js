@@ -145,6 +145,17 @@ var Maze = React.createClass({
 			} else {
 				enemies.splice(index, 1, attackResult);
 			}
+		} else if (newPositionType == "boss") {
+			var attackAudio = new Audio('sounds/attack.wav');
+			attackAudio.play();
+			var boss = {enemyHealth: this.state.bossHealth};
+			var attackBoss = this.attackEnemy(boss, "boss");
+			if (attackBoss === true) {
+				alert("player won");
+			} else {
+				this.setState({bossHealth: attackBoss.enemyHealth});
+			}
+			console.log(attackBoss.enemyHealth);
 		}
 		if (newPositionType == "health") {
 			var healthAudio = new Audio('sounds/collect-health.wav');
@@ -169,12 +180,17 @@ var Maze = React.createClass({
 		}
 		this.setState({squares: squares, playerPosition: [newXPosition, newYPosition]});
 	},
-	attackEnemy: function(attackedEnemy) {
+	attackEnemy: function(attackedEnemy, char = "enemy") {
 		if (attackedEnemy.enemyHealth - this.props.weaponDamage <= 0){
 			return true;
 		} else {
-			var newPlayerHealth = this.props.health - Math.floor(5 * Math.random() + this.props.dungeon * 5);
-			if (newPlayerHealth <= 0) {
+			if (char = "enemy") {
+				var newPlayerHealth = this.props.health - Math.floor(5 * Math.random() + this.props.dungeon * 5);
+			} else if (char = "boss") {
+				var newPlayerHealth = this.props.health - Math.floor(5 * Math.random() + this.props.dungeon * 10);
+			}
+			
+		if (newPlayerHealth <= 0) {
 				alert("player loses the game");
 			} else {
 				this.props.increaseHealth(newPlayerHealth - this.props.health);
@@ -345,6 +361,8 @@ var Maze = React.createClass({
 					bossCondition = false;
 				}
 			}
+			var bossHealth = Math.floor(Math.random() * 10 + 50);
+			this.setState({bossHealth: bossHealth});
 		}
 		return [squares, enemies];
 	},
