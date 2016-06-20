@@ -78,7 +78,13 @@ var Dashboard = React.createClass({
 var Maze = React.createClass({
 	getInitialState: function() {
 		var gridData = this.initializeGrid();
-		return ({squares: gridData[0], playerPosition: gridData[1], enemies: gridData[2]});
+		var attackAudio = new Audio('sounds/attack.wav');
+		var winAudio = new Audio('sounds/cheer.wav');
+		var healthAudio = new Audio('sounds/collect-health.wav');
+		var weaponAudio = new Audio('sounds/collect-weapon.wav');
+		var stairsAudio = new Audio('sounds/stairs.wav');
+		var loseAudio = new Audio('sounds/lose.wav');
+		return ({squares: gridData[0], playerPosition: gridData[1], enemies: gridData[2], attackAudio: attackAudio, winAudio: winAudio, healthAudio: healthAudio, weaponAudio: weaponAudio, stairsAudio: stairsAudio, loseAudio: loseAudio});
 	},
 	initializeGrid: function() {
 		var width = 60;
@@ -148,8 +154,7 @@ var Maze = React.createClass({
 					var index = enemy;
 				}
 			}
-			var attackAudio = new Audio('sounds/attack.wav');
-			attackAudio.play();
+			this.state.attackAudio.play();
 			var attackResult = this.attackEnemy(attackedEnemy);
 			if (attackResult === true) {
 				squares = this.movePlayer(squares, playerXPosition, playerYPosition, possibleNewXPosition, possibleNewYPosition);
@@ -160,29 +165,24 @@ var Maze = React.createClass({
 				enemies.splice(index, 1, attackResult);
 			}
 		} else if (newPositionType == "boss") {
-			var attackAudio = new Audio('sounds/attack.wav');
-			attackAudio.play();
+			this.state.attackAudio.play();
 			var boss = {enemyHealth: this.state.bossHealth};
 			var attackBoss = this.attackEnemy(boss, "boss");
 			if (attackBoss === true) {
-				var winAudio = new Audio('sounds/cheer.wav');
-				winAudio.play();
+				this.state.winAudio.play();
 				alert("player won");
 			} else {
 				this.setState({bossHealth: attackBoss.enemyHealth});
 			}
 		}
 		if (newPositionType == "health") {
-			var healthAudio = new Audio('sounds/collect-health.wav');
-			healthAudio.play();
+			this.state.healthAudio.play();
 			this.props.increaseHealth();
 		} else if (newPositionType == "weapon") {
-			var weaponAudio = new Audio('sounds/collect-weapon.wav');
-			weaponAudio.play();
+			this.state.weaponAudio.play();
 			this.props.upgradeWeapon();
 		} else if (newPositionType == "stairs") {
-			var stairsAudio = new Audio('sounds/stairs.wav');
-			stairsAudio.play();
+			this.state.stairsAudio.play();
 			this.props.incrementDungeon();
 			var newGrid = this.initializeGrid();
 			squares = newGrid[0];
@@ -206,8 +206,7 @@ var Maze = React.createClass({
 			}
 			
 		if (newPlayerHealth <= 0) {
-				var loseAudio = new Audio('sounds/lose.wav');
-				loseAudio.play();
+				this.state.loseAudio.play();
 				alert("player loses the game");
 			} else {
 				this.props.increaseHealth(newPlayerHealth - this.props.health);
