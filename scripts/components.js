@@ -26,7 +26,7 @@ var GameArea = React.createClass({
 		} else {
 			var xpMultiplier = this.state.xpMultiplier + 1;
 			/* Note that health is updated using the level value. The value value to update health will be the old one not the new one. */
-			this.setState({xpMultiplier: xpMultiplier, xp: xpMultiplier * 60, level: this.state.level + 1, weaponDamage: this.state.weaponDamage + 20, health: this.state.health + this.state.level * 20});
+			this.setState({xpMultiplier: xpMultiplier, xp: xpMultiplier * 60, level: this.state.level + 1, weaponDamage: this.state.weaponDamage + this.state.level * 10, health: this.state.health + this.state.level * 20});
 		}
 	},
 	render: function() {
@@ -161,6 +161,8 @@ var Maze = React.createClass({
 			var boss = {enemyHealth: this.state.bossHealth};
 			var attackBoss = this.attackEnemy(boss, "boss");
 			if (attackBoss === true) {
+				var winAudio = new Audio('sounds/cheer.wav');
+				winAudio.play();
 				alert("player won");
 			} else {
 				this.setState({bossHealth: attackBoss.enemyHealth});
@@ -195,12 +197,14 @@ var Maze = React.createClass({
 			return true;
 		} else {
 			if (char = "enemy") {
-				var newPlayerHealth = this.props.health - Math.floor(5 * Math.random() + this.props.dungeon * 5);
+				var newPlayerHealth = this.props.health - Math.floor(5 * Math.random() + this.props.dungeon * 30);
 			} else if (char = "boss") {
-				var newPlayerHealth = this.props.health - Math.floor(5 * Math.random() + this.props.dungeon * 10);
+				var newPlayerHealth = this.props.health - Math.floor(5 * Math.random() + this.props.dungeon * 60);
 			}
 			
 		if (newPlayerHealth <= 0) {
+				var loseAudio = new Audio('sounds/lose.wav');
+				loseAudio.play();
 				alert("player loses the game");
 			} else {
 				this.props.increaseHealth(newPlayerHealth - this.props.health);
@@ -371,7 +375,7 @@ var Maze = React.createClass({
 					bossCondition = false;
 				}
 			}
-			var bossHealth = Math.floor(Math.random() * 10 + 50);
+			var bossHealth = Math.floor(Math.random() * 20 + 25);
 			this.setState({bossHealth: bossHealth});
 		}
 		return [squares, enemies];
