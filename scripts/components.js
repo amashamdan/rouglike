@@ -2,30 +2,30 @@
 var GameArea = React.createClass({
 	getInitialState: function() {
 		return ({health: 100, weapons: [
-										{name: "Needle", damage: 5},
-										{name: "Knife", damage: 10},
-										{name: "Sword", damage: 15},
+										{name: "Needle", damage: 2},
+										{name: "Knife", damage: 5},
+										{name: "Sword", damage: 10},
 										{name: "Gun", damage: 20},
-										{name: "Rifle", damage: 25},
-										{name: "RBG", damage: 30}],
-				dungeon: 0, weaponCounter: 1, selectedWeapon: "Needle"});
+										{name: "Rifle", damage: 30},
+										{name: "RBG", damage: 40}],
+				dungeon: 1, selectedWeapon: "Needle", weaponDamage: 2});
 	},
 	increaseHealth: function() {
 		this.setState({health: this.state.health + 20});
 	},
 	upgradeWeapon: function() {
-		this.setState({selectedWeapon: this.state.weapons[this.state.weaponCounter].name});
+		this.setState({selectedWeapon: this.state.weapons[this.state.dungeon].name});
+		this.setState({weaponDamage: this.state.weapons[this.state.dungeon].damage});
 	},
 	incrementDungeon: function() {
 		this.setState({dungeon: this.state.dungeon + 1});
-		this.setState({weaponCounter: this.state.weaponCounter + 1})
 	},
 	render: function() {
 		return (
 			<div>
 				<h3>Roguelike Dungeon Crawler (ReactJS & Sass)</h3>
 				<Dashboard health={this.state.health} weapon={this.state.selectedWeapon} dungeon={this.state.dungeon} />
-				<Maze increaseHealth={this.increaseHealth} upgradeWeapon={this.upgradeWeapon} incrementDungeon={this.incrementDungeon} dungeon={this.state.dungeon} />
+				<Maze increaseHealth={this.increaseHealth} upgradeWeapon={this.upgradeWeapon} incrementDungeon={this.incrementDungeon} dungeon={this.state.dungeon} weaponDamage={this.state.weaponDamage}/>
 				<Information />
 			</div>
 		);
@@ -83,7 +83,6 @@ var Maze = React.createClass({
 		squares = enemyData[0];
 		var enemies = enemyData[1];
 		squares = this.generateHealth(squares, width,height);
-		console.log(enemies)
 		return [squares, playerPosition, enemies];
 	},
 	componentDidMount: function() {
@@ -128,6 +127,24 @@ var Maze = React.createClass({
 			squares = this.movePlayer(squares, playerXPosition, playerYPosition, possibleNewXPosition, possibleNewYPosition);
 			newXPosition = possibleNewXPosition;
 			newYPosition = possibleNewYPosition;
+		} else if (newPositionType == "enemy") {
+			var enemies = this.state.enemies
+			for (var enemy in enemies) {
+				if (enemies[enemy].location[0] == possibleNewXPosition && enemies[enemy].location[1] == possibleNewYPosition) {
+					var attackedEnemy = enemies[enemy];
+					var index = enemy;
+				}
+			}
+			var attackAudio = new Audio('sounds/attack.wav');
+			attackAudio.play();
+			var attackResult = this.attackEnemy(attackedEnemy);
+			if (attackResult === true) {
+				squares = this.movePlayer(squares, playerXPosition, playerYPosition, possibleNewXPosition, possibleNewYPosition);
+				newXPosition = possibleNewXPosition;
+				newYPosition = possibleNewYPosition;
+			} else {
+				enemies.splice(index, 1, attackResult);
+			}
 		}
 		if (newPositionType == "health") {
 			var healthAudio = new Audio('sounds/collect-health.wav');
@@ -148,6 +165,14 @@ var Maze = React.createClass({
 			document.getElementById("maze").scrollTop = (newXPosition - 15) * 15;
 		}
 		this.setState({squares: squares, playerPosition: [newXPosition, newYPosition]});
+	},
+	attackEnemy: function(attackedEnemy) {
+		if (attackedEnemy.enemyHealth - this.props.weaponDamage <= 0){
+			return true;
+		} else {
+			attackedEnemy.enemyHealth -= this.props.weaponDamage;
+			return attackedEnemy;			
+		}
 	},
 	movePlayer: function(squares, playerXPosition, playerYPosition, newXPosition, newYPosition) {
 		squares[playerXPosition].splice(playerYPosition, 1, <div key={[playerXPosition, playerYPosition]} className="room"></div>);
@@ -276,7 +301,7 @@ var Maze = React.createClass({
 					}
 					var playerXPosition = xPosition; //because xPosition will be overridden for weapon and stairs genetaion
 					var playerYPosition = yPosition;
-				} else if (item == "stairs" && this.props.dungeon < 4) {
+				} else if (item == "stairs" && this.props.dungeon < 5) {
 					squares[xPosition].splice(yPosition, 1, <div key={[xPosition, yPosition]} className="stairs"></div>);
 				} else if (item == "weapon") {
 					squares[xPosition].splice(yPosition, 1, <div key={[xPosition, yPosition]} className="weapon"></div>);
@@ -294,13 +319,13 @@ var Maze = React.createClass({
 			var enemyYPosition = Math.floor(Math.random() * height);
 			if (squares[enemyXPosition][enemyYPosition].props.className == "room") {
 				squares[enemyXPosition].splice(enemyYPosition, 1, <div key={[enemyXPosition, enemyYPosition]} className="enemy"></div>);
-				enemies.push({enemyHealth: (this.props.dungeon+1) * 10 + Math.floor(Math.random() * 5),
+				enemies.push({enemyHealth: (this.props.dungeon) * 10 + Math.floor(Math.random() * 5),
 							location: [enemyXPosition, enemyYPosition]});
 				enemiesToPlace--;
 			}
 		}
 		/* To generate boss */
-		if (this.props.dungeon == 4) {
+		if (this.props.dungeon == 5) {
 			var bossCondition = true;
 			while (bossCondition) {
 				var bossXPosition = Math.floor(Math.random() * width);
