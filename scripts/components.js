@@ -4,14 +4,18 @@ var GameArea = React.createClass({
 		return ({health: 100, weapons: [
 										{name: "Needle", damage: 2},
 										{name: "Knife", damage: 5},
-										{name: "Sword", damage: 10},
-										{name: "Gun", damage: 20},
-										{name: "Rifle", damage: 30},
-										{name: "RBG", damage: 40}],
+										{name: "Sword", damage: 8},
+										{name: "Gun", damage: 11},
+										{name: "Rifle", damage: 14},
+										{name: "RBG", damage: 17}],
 				dungeon: 1, selectedWeapon: "Needle", weaponDamage: 2, xp: 60, xpMultiplier: 1, level: 1});
 	},
 	increaseHealth: function(increment = 20) {
-		this.setState({health: this.state.health + increment});
+		if (increment == 20) {
+			this.setState({health: this.state.health + increment * this.state.dungeon});
+		} else {
+			this.setState({health: this.state.health + increment});
+		}
 	},
 	upgradeWeapon: function() {
 		this.setState({selectedWeapon: this.state.weapons[this.state.dungeon].name});
@@ -26,7 +30,7 @@ var GameArea = React.createClass({
 		} else {
 			var xpMultiplier = this.state.xpMultiplier + 1;
 			/* Note that health is updated using the level value. The value value to update health will be the old one not the new one. */
-			this.setState({xpMultiplier: xpMultiplier, xp: xpMultiplier * 60, level: this.state.level + 1, weaponDamage: this.state.weaponDamage + this.state.level * 10, health: this.state.health + this.state.level * 20});
+			this.setState({xpMultiplier: xpMultiplier, xp: xpMultiplier * 60, level: this.state.level + 1, weaponDamage: this.state.weaponDamage + this.state.level * 2, health: this.state.health + this.state.level * 20});
 		}
 	},
 	render: function() {
@@ -167,7 +171,6 @@ var Maze = React.createClass({
 			} else {
 				this.setState({bossHealth: attackBoss.enemyHealth});
 			}
-			console.log(attackBoss.enemyHealth);
 		}
 		if (newPositionType == "health") {
 			var healthAudio = new Audio('sounds/collect-health.wav');
@@ -197,7 +200,7 @@ var Maze = React.createClass({
 			return true;
 		} else {
 			if (char = "enemy") {
-				var newPlayerHealth = this.props.health - Math.floor(5 * Math.random() + this.props.dungeon * 30);
+				var newPlayerHealth = this.props.health - Math.floor(5 * Math.random() + this.props.dungeon * 15);
 			} else if (char = "boss") {
 				var newPlayerHealth = this.props.health - Math.floor(5 * Math.random() + this.props.dungeon * 60);
 			}
@@ -358,7 +361,7 @@ var Maze = React.createClass({
 			var enemyYPosition = Math.floor(Math.random() * height);
 			if (squares[enemyXPosition][enemyYPosition].props.className == "room") {
 				squares[enemyXPosition].splice(enemyYPosition, 1, <div key={[enemyXPosition, enemyYPosition]} className="enemy"></div>);
-				enemies.push({enemyHealth: (this.props.dungeon) * 10 + Math.floor(Math.random() * 5),
+				enemies.push({enemyHealth: (this.props.dungeon) * 15 + Math.floor(Math.random() * 5),
 							location: [enemyXPosition, enemyYPosition]});
 				enemiesToPlace--;
 			}
@@ -375,7 +378,7 @@ var Maze = React.createClass({
 					bossCondition = false;
 				}
 			}
-			var bossHealth = Math.floor(Math.random() * 20 + 25);
+			var bossHealth = Math.floor(Math.random() * 50 + 350);
 			this.setState({bossHealth: bossHealth});
 		}
 		return [squares, enemies];
