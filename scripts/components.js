@@ -10,8 +10,8 @@ var GameArea = React.createClass({
 										{name: "RBG", damage: 40}],
 				dungeon: 1, selectedWeapon: "Needle", weaponDamage: 2});
 	},
-	increaseHealth: function() {
-		this.setState({health: this.state.health + 20});
+	increaseHealth: function(increment = 20) {
+		this.setState({health: this.state.health + increment});
 	},
 	upgradeWeapon: function() {
 		this.setState({selectedWeapon: this.state.weapons[this.state.dungeon].name});
@@ -25,7 +25,7 @@ var GameArea = React.createClass({
 			<div>
 				<h3>Roguelike Dungeon Crawler (ReactJS & Sass)</h3>
 				<Dashboard health={this.state.health} weapon={this.state.selectedWeapon} dungeon={this.state.dungeon} />
-				<Maze increaseHealth={this.increaseHealth} upgradeWeapon={this.upgradeWeapon} incrementDungeon={this.incrementDungeon} dungeon={this.state.dungeon} weaponDamage={this.state.weaponDamage}/>
+				<Maze health={this.state.health} increaseHealth={this.increaseHealth} upgradeWeapon={this.upgradeWeapon} incrementDungeon={this.incrementDungeon} dungeon={this.state.dungeon} weaponDamage={this.state.weaponDamage}/>
 				<Information />
 			</div>
 		);
@@ -173,8 +173,14 @@ var Maze = React.createClass({
 		if (attackedEnemy.enemyHealth - this.props.weaponDamage <= 0){
 			return true;
 		} else {
-			attackedEnemy.enemyHealth -= this.props.weaponDamage;
-			return attackedEnemy;			
+			var newPlayerHealth = this.props.health - Math.floor(5 * Math.random() + this.props.dungeon * 5);
+			if (newPlayerHealth <= 0) {
+				alert("player loses the game");
+			} else {
+				this.props.increaseHealth(newPlayerHealth - this.props.health);
+				attackedEnemy.enemyHealth -= this.props.weaponDamage;
+				return attackedEnemy;		
+			}	
 		}
 	},
 	movePlayer: function(squares, playerXPosition, playerYPosition, newXPosition, newYPosition) {
