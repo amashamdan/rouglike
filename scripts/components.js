@@ -162,6 +162,9 @@ var Maze = React.createClass({
 			squares = newGrid[0];
 			newXPosition = newGrid[1][0];
 			newYPosition = newGrid[1][1];
+			var enemies = newGrid[2];
+			/* Creates the enemis list in the new dungeon. It's not set at the last line of this method alongside squares and playerposition because we only need to change it when a new grid is created. */
+			this.setState({enemies: enemies});
 			document.getElementById("maze").scrollTop = (newXPosition - 15) * 15;
 		}
 		this.setState({squares: squares, playerPosition: [newXPosition, newYPosition]});
