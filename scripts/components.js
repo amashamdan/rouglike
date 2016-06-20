@@ -8,24 +8,33 @@ var GameArea = React.createClass({
 										{name: "Gun", damage: 20},
 										{name: "Rifle", damage: 30},
 										{name: "RBG", damage: 40}],
-				dungeon: 1, selectedWeapon: "Needle", weaponDamage: 2});
+				dungeon: 1, selectedWeapon: "Needle", weaponDamage: 2, xp: 60, xpMultiplier: 1, level: 1});
 	},
 	increaseHealth: function(increment = 20) {
 		this.setState({health: this.state.health + increment});
 	},
 	upgradeWeapon: function() {
 		this.setState({selectedWeapon: this.state.weapons[this.state.dungeon].name});
-		this.setState({weaponDamage: this.state.weapons[this.state.dungeon].damage});
+		this.setState({weaponDamage: this.state.weaponDamage + this.state.weapons[this.state.dungeon].damage});
 	},
 	incrementDungeon: function() {
 		this.setState({dungeon: this.state.dungeon + 1});
+	},
+	updateXp: function() {
+		if (this.state.xp - this.state.level * 10 > 0) {
+			this.setState({xp: this.state.xp - this.state.level * 10});
+		} else {
+			var xpMultiplier = this.state.xpMultiplier + 1;
+			/* Note that health is updated using the level value. The value value to update health will be the old one not the new one. */
+			this.setState({xpMultiplier: xpMultiplier, xp: xpMultiplier * 60, level: this.state.level + 1, weaponDamage: this.state.weaponDamage + 20, health: this.state.health + this.state.level * 20});
+		}
 	},
 	render: function() {
 		return (
 			<div>
 				<h3>Roguelike Dungeon Crawler (ReactJS & Sass)</h3>
-				<Dashboard health={this.state.health} weapon={this.state.selectedWeapon} dungeon={this.state.dungeon} />
-				<Maze health={this.state.health} increaseHealth={this.increaseHealth} upgradeWeapon={this.upgradeWeapon} incrementDungeon={this.incrementDungeon} dungeon={this.state.dungeon} weaponDamage={this.state.weaponDamage}/>
+				<Dashboard health={this.state.health} weapon={this.state.selectedWeapon} dungeon={this.state.dungeon} attack={this.state.weaponDamage} xp={this.state.xp} level={this.state.level} />
+				<Maze health={this.state.health} increaseHealth={this.increaseHealth} upgradeWeapon={this.upgradeWeapon} incrementDungeon={this.incrementDungeon} dungeon={this.state.dungeon} weaponDamage={this.state.weaponDamage} updateXp={this.updateXp}/>
 				<Information />
 			</div>
 		);
@@ -49,9 +58,9 @@ var Dashboard = React.createClass({
 			<div className="controls">
 				<div className="control">Health: {this.props.health}</div>
 				<div className="control">Weapon: {this.props.weapon}</div>
-				<div className="control">Attack: 7</div>
-				<div className="control">Level: 0</div>
-				<div className="control">XP to next level: 60</div>
+				<div className="control">Attack: {this.props.attack}</div>
+				<div className="control">Level: {this.props.level}</div>
+				<div className="control">XP to next level: {this.props.xp}</div>
 				<div className="control">Dungeon: {this.props.dungeon}</div>
 				<button>Turn lights on</button>
 				<button onClick={this.scrollUp}>Scroll Up</button>
@@ -142,6 +151,7 @@ var Maze = React.createClass({
 				squares = this.movePlayer(squares, playerXPosition, playerYPosition, possibleNewXPosition, possibleNewYPosition);
 				newXPosition = possibleNewXPosition;
 				newYPosition = possibleNewYPosition;
+				this.props.updateXp();
 			} else {
 				enemies.splice(index, 1, attackResult);
 			}
