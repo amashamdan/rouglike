@@ -1,14 +1,18 @@
 /* GameArea component is the parent div, it has 3 children components: Dashboard, Maze, Information. */
 var GameArea = React.createClass({
 	getInitialState: function() {
-		return ({health: 100, weapons: [
-										{name: "Needle", damage: 2},
-										{name: "Knife", damage: 5},
-										{name: "Sword", damage: 8},
-										{name: "Gun", damage: 11},
-										{name: "Rifle", damage: 14},
-										{name: "RBG", damage: 17}],
-				dungeon: 1, selectedWeapon: "Needle", weaponDamage: 2, xp: 60, xpMultiplier: 1, level: 1});
+		return ({health: 100,
+				weapons: [
+						{name: "Needle", damage: 2},
+						{name: "Knife", damage: 5},
+						{name: "Sword", damage: 8},
+						{name: "Gun", damage: 11},
+						{name: "Rifle", damage: 14},
+						{name: "RBG", damage: 17}],
+				dungeon: 1, selectedWeapon: "Needle", weaponDamage: 2, xp: 60, xpMultiplier: 1, level: 1, messageStatus: false,
+				messages: {win: "Good for you! You beat the big boss.",
+						loss: "Naaah... You got killed, get some practice and try again."},
+				message: "", gameProgress: true});
 	},
 	increaseHealth: function(increment = 20) {
 		if (increment == 20) {
@@ -33,13 +37,23 @@ var GameArea = React.createClass({
 			this.setState({xpMultiplier: xpMultiplier, xp: xpMultiplier * 60, level: this.state.level + 1, weaponDamage: this.state.weaponDamage + this.state.level * 2, health: this.state.health + this.state.level * 20});
 		}
 	},
+	displayMessage: function(result) {
+		document.body.style.overflow = "hidden";
+		this.setState({gameProgress: false, messageStatus: true, message: this.state.messages[result]});
+	},
+	handleClick: function() {
+		document.body.style.overflow = "auto";
+		this.setState({messageStatus: false, health: 100, dungeon: 1, selectedWeapon: "Needle", weaponDamage: 2, xp: 60, xpMultiplier: 1, level: 1, gameProgress: true});
+		this.refs['maze'].newGrid();
+	},
 	render: function() {
 		return (
 			<div>
 				<h3>Roguelike Dungeon Crawler (ReactJS & Sass)</h3>
 				<Dashboard health={this.state.health} weapon={this.state.selectedWeapon} dungeon={this.state.dungeon} attack={this.state.weaponDamage} xp={this.state.xp} level={this.state.level} />
-				<Maze health={this.state.health} increaseHealth={this.increaseHealth} upgradeWeapon={this.upgradeWeapon} incrementDungeon={this.incrementDungeon} dungeon={this.state.dungeon} weaponDamage={this.state.weaponDamage} updateXp={this.updateXp}/>
+				<Maze ref="maze" health={this.state.health} increaseHealth={this.increaseHealth} upgradeWeapon={this.upgradeWeapon} incrementDungeon={this.incrementDungeon} dungeon={this.state.dungeon} weaponDamage={this.state.weaponDamage} updateXp={this.updateXp} displayMessage={this.displayMessage} gameProgress={this.state.gameProgress}/>
 				<Information />
+				<Message handleClick={this.handleClick} status={this.state.messageStatus} message={this.state.message} />
 			</div>
 		);
 	}
@@ -78,13 +92,21 @@ var Dashboard = React.createClass({
 var Maze = React.createClass({
 	getInitialState: function() {
 		var gridData = this.initializeGrid();
-		var attackAudio = new Audio('sounds/attack.wav');
 		var winAudio = new Audio('sounds/cheer.wav');
 		var healthAudio = new Audio('sounds/collect-health.wav');
 		var weaponAudio = new Audio('sounds/collect-weapon.wav');
 		var stairsAudio = new Audio('sounds/stairs.wav');
 		var loseAudio = new Audio('sounds/lose.wav');
-		return ({squares: gridData[0], playerPosition: gridData[1], enemies: gridData[2], attackAudio: attackAudio, winAudio: winAudio, healthAudio: healthAudio, weaponAudio: weaponAudio, stairsAudio: stairsAudio, loseAudio: loseAudio});
+		return ({squares: gridData[0], playerPosition: gridData[1], enemies: gridData[2], winAudio: winAudio, healthAudio: healthAudio, weaponAudio: weaponAudio, stairsAudio: stairsAudio, loseAudio: loseAudio});
+	},
+	newGrid: function() {
+		var newGrid = this.initializeGrid();
+		var squares = newGrid[0];
+		var newXPosition = newGrid[1][0];
+		var newYPosition = newGrid[1][1];
+		var enemies = newGrid[2];
+		document.getElementById("maze").scrollTop = (newXPosition - 15) * 15;
+		this.setState({squares: squares, playerPosition: [newXPosition, newYPosition], enemies: enemies});
 	},
 	initializeGrid: function() {
 		var width = 60;
@@ -108,92 +130,98 @@ var Maze = React.createClass({
 		window.addEventListener('keydown', this.handlepress);
 	},
 	handlepress: function(e) {
-		var squares = this.state.squares;
-		var playerXPosition = this.state.playerPosition[0];
-		var playerYPosition = this.state.playerPosition[1];
-		var newXPosition = playerXPosition; //in case the player won't move
-		var newYPosition = playerYPosition; //
-		var newPositionType;
-		if (e.code == "ArrowUp") {
-			var possibleNewXPosition = playerXPosition - 1;
-			var possibleNewYPosition = playerYPosition;
-			newPositionType = this.state.squares[possibleNewXPosition][possibleNewYPosition].props.className;
+		if (this.props.gameProgress) {
+			/* To revent keyboard from scrolling. */
+			e.preventDefault();
+			var squares = this.state.squares;
+			var playerXPosition = this.state.playerPosition[0];
+			var playerYPosition = this.state.playerPosition[1];
+			var newXPosition = playerXPosition; //in case the player won't move
+			var newYPosition = playerYPosition; //
+			var newPositionType;
+			if (e.code == "ArrowUp") {
+				var possibleNewXPosition = playerXPosition - 1;
+				var possibleNewYPosition = playerYPosition;
+				newPositionType = this.state.squares[possibleNewXPosition][possibleNewYPosition].props.className;
+				if (newPositionType == "room" || newPositionType == "health" || newPositionType == "weapon") {
+					if (playerXPosition < 45) {	
+						/* must be -= 15 (not = -15). setting it to -15 means you're positiong at a fixed value. -=15 means you're taking the current poistion and moving 15 from there. */
+						document.getElementById("maze").scrollTop -= 15;
+					}
+				}
+			} else if (e.code == "ArrowDown") {
+				var possibleNewXPosition = playerXPosition + 1;
+				var possibleNewYPosition = playerYPosition;
+				newPositionType = this.state.squares[possibleNewXPosition][possibleNewYPosition].props.className;
+				if (newPositionType == "room" || newPositionType == "health" || newPositionType == "weapon") {
+					if (playerXPosition > 15) {
+						document.getElementById("maze").scrollTop += 15;
+					}
+				}
+			} else if (e.code == "ArrowLeft") {
+				var possibleNewXPosition = playerXPosition;
+				var possibleNewYPosition = playerYPosition - 1;
+				newPositionType = this.state.squares[possibleNewXPosition][possibleNewYPosition].props.className;
+			} else if (e.code == "ArrowRight") {
+				var possibleNewXPosition = playerXPosition;
+				var possibleNewYPosition = playerYPosition + 1;
+				newPositionType = this.state.squares[possibleNewXPosition][possibleNewYPosition].props.className;
+			}
 			if (newPositionType == "room" || newPositionType == "health" || newPositionType == "weapon") {
-				if (playerXPosition < 45) {	
-					/* must be -= 15 (not = -15). setting it to -15 means you're positiong at a fixed value. -=15 means you're taking the current poistion and moving 15 from there. */
-					document.getElementById("maze").scrollTop -= 15;
-				}
-			}
-		} else if (e.code == "ArrowDown") {
-			var possibleNewXPosition = playerXPosition + 1;
-			var possibleNewYPosition = playerYPosition;
-			newPositionType = this.state.squares[possibleNewXPosition][possibleNewYPosition].props.className;
-			if (newPositionType == "room" || newPositionType == "health" || newPositionType == "weapon") {
-				if (playerXPosition > 15) {
-					document.getElementById("maze").scrollTop += 15;
-				}
-			}
-		} else if (e.code == "ArrowLeft") {
-			var possibleNewXPosition = playerXPosition;
-			var possibleNewYPosition = playerYPosition - 1;
-			newPositionType = this.state.squares[possibleNewXPosition][possibleNewYPosition].props.className;
-		} else if (e.code == "ArrowRight") {
-			var possibleNewXPosition = playerXPosition;
-			var possibleNewYPosition = playerYPosition + 1;
-			newPositionType = this.state.squares[possibleNewXPosition][possibleNewYPosition].props.className;
-		}
-		if (newPositionType == "room" || newPositionType == "health" || newPositionType == "weapon") {
-			squares = this.movePlayer(squares, playerXPosition, playerYPosition, possibleNewXPosition, possibleNewYPosition);
-			newXPosition = possibleNewXPosition;
-			newYPosition = possibleNewYPosition;
-		} else if (newPositionType == "enemy") {
-			var enemies = this.state.enemies
-			for (var enemy in enemies) {
-				if (enemies[enemy].location[0] == possibleNewXPosition && enemies[enemy].location[1] == possibleNewYPosition) {
-					var attackedEnemy = enemies[enemy];
-					var index = enemy;
-				}
-			}
-			this.state.attackAudio.play();
-			var attackResult = this.attackEnemy(attackedEnemy);
-			if (attackResult === true) {
 				squares = this.movePlayer(squares, playerXPosition, playerYPosition, possibleNewXPosition, possibleNewYPosition);
 				newXPosition = possibleNewXPosition;
 				newYPosition = possibleNewYPosition;
-				this.props.updateXp();
-			} else {
-				enemies.splice(index, 1, attackResult);
+			} else if (newPositionType == "enemy") {
+				var enemies = this.state.enemies
+				for (var enemy in enemies) {
+					if (enemies[enemy].location[0] == possibleNewXPosition && enemies[enemy].location[1] == possibleNewYPosition) {
+						var attackedEnemy = enemies[enemy];
+						var index = enemy;
+					}
+				}
+				var attackAudio = new Audio('sounds/attack.wav');
+				attackAudio.play();
+				var attackResult = this.attackEnemy(attackedEnemy);
+				if (attackResult === true) {
+					squares = this.movePlayer(squares, playerXPosition, playerYPosition, possibleNewXPosition, possibleNewYPosition);
+					newXPosition = possibleNewXPosition;
+					newYPosition = possibleNewYPosition;
+					this.props.updateXp();
+				} else {
+					enemies.splice(index, 1, attackResult);
+				}
+			} else if (newPositionType == "boss") {
+				var attackAudio = new Audio('sounds/attack.wav');
+				attackAudio.play();
+				var boss = {enemyHealth: this.state.bossHealth};
+				var attackBoss = this.attackEnemy(boss, "boss");
+				if (attackBoss === true) {
+					this.state.winAudio.play();
+					this.props.displayMessage("win");
+				} else {
+					this.setState({bossHealth: attackBoss.enemyHealth});
+				}
 			}
-		} else if (newPositionType == "boss") {
-			this.state.attackAudio.play();
-			var boss = {enemyHealth: this.state.bossHealth};
-			var attackBoss = this.attackEnemy(boss, "boss");
-			if (attackBoss === true) {
-				this.state.winAudio.play();
-				alert("player won");
-			} else {
-				this.setState({bossHealth: attackBoss.enemyHealth});
+			if (newPositionType == "health") {
+				this.state.healthAudio.play();
+				this.props.increaseHealth();
+			} else if (newPositionType == "weapon") {
+				this.state.weaponAudio.play();
+				this.props.upgradeWeapon();
+			} else if (newPositionType == "stairs") {
+				this.state.stairsAudio.play();
+				this.props.incrementDungeon();
+				var newGrid = this.initializeGrid();
+				squares = newGrid[0];
+				newXPosition = newGrid[1][0];
+				newYPosition = newGrid[1][1];
+				var enemies = newGrid[2];
+				/* Creates the enemis list in the new dungeon. It's not set at the last line of this method alongside squares and playerposition because we only need to change it when a new grid is created. */
+				this.setState({enemies: enemies});
+				document.getElementById("maze").scrollTop = (newXPosition - 15) * 15;
 			}
-		}
-		if (newPositionType == "health") {
-			this.state.healthAudio.play();
-			this.props.increaseHealth();
-		} else if (newPositionType == "weapon") {
-			this.state.weaponAudio.play();
-			this.props.upgradeWeapon();
-		} else if (newPositionType == "stairs") {
-			this.state.stairsAudio.play();
-			this.props.incrementDungeon();
-			var newGrid = this.initializeGrid();
-			squares = newGrid[0];
-			newXPosition = newGrid[1][0];
-			newYPosition = newGrid[1][1];
-			var enemies = newGrid[2];
-			/* Creates the enemis list in the new dungeon. It's not set at the last line of this method alongside squares and playerposition because we only need to change it when a new grid is created. */
-			this.setState({enemies: enemies});
-			document.getElementById("maze").scrollTop = (newXPosition - 15) * 15;
-		}
-		this.setState({squares: squares, playerPosition: [newXPosition, newYPosition]});
+			this.setState({squares: squares, playerPosition: [newXPosition, newYPosition]});
+		}	
 	},
 	attackEnemy: function(attackedEnemy, char = "enemy") {
 		if (attackedEnemy.enemyHealth - this.props.weaponDamage <= 0){
@@ -207,7 +235,7 @@ var Maze = React.createClass({
 			
 		if (newPlayerHealth <= 0) {
 				this.state.loseAudio.play();
-				alert("player loses the game");
+				this.props.displayMessage("loss");
 			} else {
 				this.props.increaseHealth(newPlayerHealth - this.props.health);
 				attackedEnemy.enemyHealth -= this.props.weaponDamage;
@@ -413,6 +441,25 @@ var Information = React.createClass({
 			</ul>
 		);
 	}
-})
+});
+
+var Message = React.createClass({
+	render: function() {
+		if (this.props.status) {
+			return (
+				<div>
+					<div className="layer">
+					</div>
+					<div className="message">
+						<p>{this.props.message}</p>
+						<button onClick={this.props.handleClick}>New Game</button>
+					</div>
+				</div>
+			);
+		} else {
+			return (<div></div>);
+		}
+	}
+});
 
 ReactDOM.render(<GameArea />, document.getElementById("game"));
