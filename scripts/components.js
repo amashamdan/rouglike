@@ -258,40 +258,6 @@ var Maze = React.createClass({
 				squares[i].push(<div key={[i, k]} className="wall"></div>)
 			}
 		}
-
-		var rooms = [{room: 0, rowStart: 3, rowEnd: 13, colomnStart: 3, colomnEnd: 13},
-					{room: 1, rowStart: 14, rowEnd: 20, colomnStart: 3, colomnEnd: 8},
-					{room: 2, rowStart: 21, rowEnd: 27, colomnStart: 5, colomnEnd: 20},
-					{room: 3, rowStart: 1, rowEnd: 8, colomnStart: 14, colomnEnd: 21},
-					{room: 4, rowStart: 9, rowEnd: 20, colomnStart: 14, colomnEnd: 24},
-					{room: 5, rowStart: 4, rowEnd: 11, colomnStart: 25, colomnEnd: 30},
-					{room: 6, rowStart: 8, rowEnd: 15, colomnStart: 31, colomnEnd: 45},
-					{room: 7, rowStart: 2, rowEnd: 10, colomnStart: 46, colomnEnd: 54},
-					{room: 8, rowStart: 16, rowEnd: 26, colomnStart: 25, colomnEnd: 34},
-					{room: 9, rowStart: 16, rowEnd: 27, colomnStart: 35, colomnEnd: 45},
-					{room: 10, rowStart: 28, rowEnd: 37, colomnStart: 14, colomnEnd: 24},
-					{room: 11, rowStart: 28, rowEnd: 33, colomnStart: 25, colomnEnd: 37},
-					{room: 12, rowStart: 28, rowEnd: 40, colomnStart: 38, colomnEnd: 44},
-					{room: 13, rowStart: 38, rowEnd: 44, colomnStart: 9, colomnEnd: 19},
-					{room: 14, rowStart: 38, rowEnd: 49, colomnStart: 25, colomnEnd: 37},
-					{room: 15, rowStart: 41, rowEnd: 46, colomnStart: 38, colomnEnd: 50},
-					{room: 16, rowStart: 41, rowEnd: 57, colomnStart: 51, colomnEnd: 58},
-					{room: 17, rowStart: 47, rowEnd: 55, colomnStart: 41, colomnEnd: 50},
-					{room: 18, rowStart: 50, rowEnd: 55, colomnStart: 27, colomnEnd: 34},
-					{room: 19, rowStart: 45, rowEnd: 51, colomnStart: 16, colomnEnd: 24}];
-
-		for (var room in rooms) {
-			for (var i = rooms[room].rowStart; i < rooms[room].rowEnd; i++) {
-				for (var k = rooms[room].colomnStart; k < rooms[room].colomnEnd; k++) {
-					squares[i].splice(k, 1, <div key={[i, k]} className="room"></div>);
-				}
-			}			
-		}
-
-		var passages = [[5, 13], [13, 5], [12, 13], [9,24], [20, 17], [10, 30], [9, 45], [15, 32], [15, 44], [27, 41], [30, 37], [19, 24], [39, 37], [32, 24], [37, 15], [44, 16], [49, 30], [45, 37], [43, 50], [54, 50]];
-		for (var point in passages) {
-			squares[passages[point][0]].splice(passages[point][1], 1, <div key={[passages[point][0], passages[point][1]]} className="room"></div>);
-		}
 		/* A METHOD FOR RANDOMLY GENERATING GRID 
 		for (var i = 1; i < squares.length - 1; i++) {
 			for (var k = 1; k < squares[i].length - 1; k++) {
@@ -323,35 +289,59 @@ var Maze = React.createClass({
 			}
 		}*/
 		
-		/* ANOTHER METHOD FOR RANDOM GENERATION
-		var counter = 40;
-		while (counter >= 0) {
-			var startPointX = Math.floor(Math.random() * 60);
-			var startPointY = Math.floor(Math.random() * 60);
-			var roomWidth = Math.floor(Math.random() * 5 + 5);
-			var roomHeight = Math.floor(Math.random() * 5 + 5);
-			if (startPointX + roomWidth < width && startPointY + roomHeight < height) {
-				for (var i = startPointY; i < startPointY + roomHeight; i++){
-					for (var k = startPointX; k < startPointX + roomWidth; k++){
-						squares[i].splice(k, 1, <div key={[i, k]} className="room"></div>);
+		// ANOTHER METHOD FOR RANDOM GENERATION
+		var counter = 20;
+		var roomCenters = [];
+		while (counter > 0) {
+			/* In the if statement below, i and k start fron startPointX - 1. This is because we want to make sure that there is a wall right BEFORE this current room to avoid rooms with no wall between them. But if startPointX is 0, this will generate an error because we don't have a -1 index. So 1 is always added to random in startPointX generation to make sure we don't end up with such an error. */
+			var startPointX = Math.floor(1 + Math.random() * 59);
+			var startPointY = Math.floor(1 + Math.random() * 59);
+			var roomWidth = Math.floor(Math.random() * 10 + 5);
+			var roomHeight = Math.floor(Math.random() * 10 + 5);
+			var overlap = false;
+			if (startPointX + roomHeight < height && startPointY + roomWidth < width) {
+				for (var i = startPointX - 1; i <= startPointX + roomHeight; i++) {
+					for (var k = startPointY - 1; k <= startPointY + roomWidth; k++) {
+						if (squares[i][k].props.className == "room") {
+							overlap = true;
+							break;
+						}		
 					}
 				}
-				counter--;
+				if (!overlap) {
+					for (var i = startPointX; i < startPointX + roomHeight; i++) {
+						for (var k = startPointY; k < startPointY + roomWidth; k++) {
+							squares[i].splice(k, 1, <div key={[i, k]} className="room"></div>);
+						}
+					}
+					roomCenters.push([Math.floor((2 * startPointX + roomHeight) / 2), Math.floor((2 * startPointY + roomWidth) / 2)]);
+					counter--;
+				}
 			}
 		}
-		
-		for (var i = 9; i < 59; i = i+10) {
-			for (var  k = 9; k < 50; k++) {
-				squares[i].splice(k, 1, <div key={[i, k]} className="room"></div>);
+		/* point starts from 1 because room 0 doesn't have any preceeding room */
+		for (var point = 1; point < roomCenters.length; point++) {
+			var direction = Math.random();
+			if (direction > 0.5) { //horizontal then vertical	
+				this.buildHorTunnel(squares, roomCenters[point - 1], roomCenters[point]);
+				this.buildVerTunnel(squares, roomCenters[point - 1], roomCenters[point]);
+			} else { // vertical then horizontal
+				this.buildVerTunnel(squares, roomCenters[point - 1], roomCenters[point]);
+				this.buildHorTunnel(squares, roomCenters[point - 1], roomCenters[point]);
 			}
 		}
-
-		for (var i = 9; i < 59; i = i+10) {
-			for (var  k = 9; k < 50; k++) {
-				squares[k].splice(i, 1, <div key={[i, k]} className="room"></div>);
-			}
-		}	
-		*/		
+		return squares;
+	},
+	buildHorTunnel: function(squares, point1, point2) {
+		for (var k = Math.min(point1[1], point2[1]); k < Math.max(point1[1], point2[1]); k++) {
+			squares[point1[0]].splice(k, 1, <div key={[point1[0], k]} className="room"></div>);
+		}
+		return squares;
+	},
+	buildVerTunnel: function(squares, point1, point2) {
+		for (var k = Math.min(point1[0], point2[0]); k < Math.max(point1[0], point2[0]); k++) {
+			squares[k].splice(point2[1], 1, <div key={[k, point2[1]]} className="room"></div>);
+		}
 		return squares;
 	},
 	generateItem: function(squares, width, height, item) {
