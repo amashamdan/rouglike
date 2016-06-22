@@ -333,13 +333,13 @@ var Maze = React.createClass({
 		return squares;
 	},
 	buildHorTunnel: function(squares, point1, point2) {
-		for (var k = Math.min(point1[1], point2[1]); k < Math.max(point1[1], point2[1]); k++) {
+		for (var k = Math.min(point1[1], point2[1]); k <= Math.max(point1[1], point2[1]); k++) {
 			squares[point1[0]].splice(k, 1, <div key={[point1[0], k]} className="room"></div>);
 		}
 		return squares;
 	},
 	buildVerTunnel: function(squares, point1, point2) {
-		for (var k = Math.min(point1[0], point2[0]); k < Math.max(point1[0], point2[0]); k++) {
+		for (var k = Math.min(point1[0], point2[0]); k <= Math.max(point1[0], point2[0]); k++) {
 			squares[k].splice(point2[1], 1, <div key={[k, point2[1]]} className="room"></div>);
 		}
 		return squares;
