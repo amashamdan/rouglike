@@ -101,7 +101,6 @@ var Maze = React.createClass({
 		return ({squares: gridData[0], playerPosition: gridData[1], enemies: gridData[2], winAudio: winAudio, healthAudio: healthAudio, weaponAudio: weaponAudio, stairsAudio: stairsAudio, loseAudio: loseAudio});
 	},
 	newGrid: function() {
-		console.log(this.props.dungeon);
 		var newGrid = this.initializeGrid();
 		var squares = newGrid[0];
 		var newXPosition = newGrid[1][0];
@@ -110,6 +109,15 @@ var Maze = React.createClass({
 		document.getElementById("maze").scrollTop = (newXPosition - 15) * 15;
 		this.setState({squares: squares, playerPosition: [newXPosition, newYPosition], enemies: enemies});
 	},
+	/*componentDidMount: function() {
+		var row = this.playerPosition[0];
+		var colomn = this.playerPosition[1];
+		for (var i = row - 3; i <= row + 3; i++) {
+			for (var k = colomn - 3; i <= colomn + 3; k++) {
+				console.log(i, k);
+			}
+		}
+	},*/
 	initializeGrid: function() {
 		var width = 60;
 		var height = 60;
@@ -126,6 +134,22 @@ var Maze = React.createClass({
 		squares = enemyData[0];
 		var enemies = enemyData[1];
 		squares = this.generateHealth(squares, width,height);
+
+		// turn light on 
+		var row = playerPosition[0];
+		var colomn = playerPosition[1];
+
+		var c = 5;
+		for (var i = Math.max(0, row - 5); i <= Math.min(row + 5, 59); i++) {
+			for (var k = Math.max(colomn - Math.abs(5 - Math.abs(c)), 0); k <= Math.min(colomn + Math.abs(5-Math.abs(c)), 59); k++) {
+				var tile = squares[i][k].props.id;
+				squares[i].splice(k, 1, <div key={[i, k]} id={tile}></div>)
+			}
+			c--;
+		}
+
+		
+
 		return [squares, playerPosition, enemies];
 	},
 	componentDidMount: function() {
@@ -144,7 +168,7 @@ var Maze = React.createClass({
 			if (e.code == "ArrowUp") {
 				var possibleNewXPosition = playerXPosition - 1;
 				var possibleNewYPosition = playerYPosition;
-				newPositionType = this.state.squares[possibleNewXPosition][possibleNewYPosition].props.className;
+				newPositionType = this.state.squares[possibleNewXPosition][possibleNewYPosition].props.id;
 				if (newPositionType == "room" || newPositionType == "health" || newPositionType == "weapon") {
 					if (playerXPosition < 45) {	
 						/* must be -= 15 (not = -15). setting it to -15 means you're positiong at a fixed value. -=15 means you're taking the current poistion and moving 15 from there. */
@@ -154,7 +178,7 @@ var Maze = React.createClass({
 			} else if (e.code == "ArrowDown") {
 				var possibleNewXPosition = playerXPosition + 1;
 				var possibleNewYPosition = playerYPosition;
-				newPositionType = this.state.squares[possibleNewXPosition][possibleNewYPosition].props.className;
+				newPositionType = this.state.squares[possibleNewXPosition][possibleNewYPosition].props.id;
 				if (newPositionType == "room" || newPositionType == "health" || newPositionType == "weapon") {
 					if (playerXPosition > 15) {
 						document.getElementById("maze").scrollTop += 15;
@@ -163,11 +187,11 @@ var Maze = React.createClass({
 			} else if (e.code == "ArrowLeft") {
 				var possibleNewXPosition = playerXPosition;
 				var possibleNewYPosition = playerYPosition - 1;
-				newPositionType = this.state.squares[possibleNewXPosition][possibleNewYPosition].props.className;
+				newPositionType = this.state.squares[possibleNewXPosition][possibleNewYPosition].props.id;
 			} else if (e.code == "ArrowRight") {
 				var possibleNewXPosition = playerXPosition;
 				var possibleNewYPosition = playerYPosition + 1;
-				newPositionType = this.state.squares[possibleNewXPosition][possibleNewYPosition].props.className;
+				newPositionType = this.state.squares[possibleNewXPosition][possibleNewYPosition].props.id;
 			}
 			if (newPositionType == "room" || newPositionType == "health" || newPositionType == "weapon") {
 				squares = this.movePlayer(squares, playerXPosition, playerYPosition, possibleNewXPosition, possibleNewYPosition);
@@ -246,8 +270,8 @@ var Maze = React.createClass({
 		}
 	},
 	movePlayer: function(squares, playerXPosition, playerYPosition, newXPosition, newYPosition) {
-		squares[playerXPosition].splice(playerYPosition, 1, <div key={[playerXPosition, playerYPosition]} className="room"></div>);
-		squares[newXPosition].splice(newYPosition, 1, <div key={[newXPosition, newYPosition]} className="player"></div>);
+		squares[playerXPosition].splice(playerYPosition, 1, <div key={[playerXPosition, playerYPosition]} id="room"></div>);
+		squares[newXPosition].splice(newYPosition, 1, <div key={[newXPosition, newYPosition]} id="player"></div>);
 		return squares;
 	},
 	generateGrid: function(width, height) {
@@ -257,19 +281,19 @@ var Maze = React.createClass({
 		}
 		for (var i = 0; i < width; i++) {
 			for (var k = 0; k < height; k++) {
-				squares[i].push(<div key={[i, k]} className="wall"></div>)
+				squares[i].push(<div key={[i, k]} id="wall" className="dark"></div>)
 			}
 		}
 		/* A METHOD FOR RANDOMLY GENERATING GRID 
 		for (var i = 1; i < squares.length - 1; i++) {
 			for (var k = 1; k < squares[i].length - 1; k++) {
-				if (squares[i][k].props.className == "wall" && squares[i][k-1].props.className == "wall" && squares[i][k+1].props.className == "wall" && squares[i-1][k].props.className == "wall" && squares[i+1][k].props.className == "wall" && squares[i-1][k-1].props.className == "wall" && squares[i-1][k+1].props.className == "wall" && squares[i+1][k-1].props.className == "wall" && squares[i+1][k+1].props.className == "wall") {
+				if (squares[i][k].props.id == "wall" && squares[i][k-1].props.id == "wall" && squares[i][k+1].props.id == "wall" && squares[i-1][k].props.id == "wall" && squares[i+1][k].props.id == "wall" && squares[i-1][k-1].props.id == "wall" && squares[i-1][k+1].props.id == "wall" && squares[i+1][k-1].props.id == "wall" && squares[i+1][k+1].props.id == "wall") {
 					var roomWidth = Math.floor(Math.random() * 5 + 5);
 					var roomHeight = Math.floor(Math.random() * 5 + 5);
 					if (i + roomHeight < height && k + roomWidth < width) {
 						for (var n = i; n < i+roomHeight; n++) {
 							for (var m = k; m < k+roomWidth; m++) {
-								squares[n].splice(m, 1, <div key={[n, m]} className="room"></div>);
+								squares[n].splice(m, 1, <div key={[n, m]} id="room"></div>);
 							}
 						}
 					}
@@ -279,13 +303,13 @@ var Maze = React.createClass({
 		
 		for (var i = 1; i < squares.length - 1; i++) {
 			for (var k = 1; k < squares[i].length - 1; k++) {
-				if (squares[i - 1][k].props.className == "room" && squares[i + 1][k].props.className == "room") {
+				if (squares[i - 1][k].props.id == "room" && squares[i + 1][k].props.id == "room") {
 					if (Math.random() > 0.8) {
-						squares[i].splice(k, 1, <div key={[i, k]} className="room"></div>);
+						squares[i].splice(k, 1, <div key={[i, k]} id="room"></div>);
 					}
-				} else if (squares[i][k-1].props.className == "room" && squares[i][k+1].props.className == "room") {
+				} else if (squares[i][k-1].props.id == "room" && squares[i][k+1].props.id == "room") {
 					if (Math.random() > 0.8) {
-						squares[i].splice(k, 1, <div key={[i, k]} className="room"></div>);
+						squares[i].splice(k, 1, <div key={[i, k]} id="room"></div>);
 					}
 				}
 			}
@@ -304,7 +328,7 @@ var Maze = React.createClass({
 			if (startPointX + roomHeight < height && startPointY + roomWidth < width) {
 				for (var i = startPointX - 1; i <= startPointX + roomHeight; i++) {
 					for (var k = startPointY - 1; k <= startPointY + roomWidth; k++) {
-						if (squares[i][k].props.className == "room") {
+						if (squares[i][k].props.id == "room") {
 							overlap = true;
 							break;
 						}		
@@ -313,7 +337,7 @@ var Maze = React.createClass({
 				if (!overlap) {
 					for (var i = startPointX; i < startPointX + roomHeight; i++) {
 						for (var k = startPointY; k < startPointY + roomWidth; k++) {
-							squares[i].splice(k, 1, <div key={[i, k]} className="room"></div>);
+							squares[i].splice(k, 1, <div key={[i, k]} id="room" className="dark"></div>);
 						}
 					}
 					roomCenters.push([Math.floor((2 * startPointX + roomHeight) / 2), Math.floor((2 * startPointY + roomWidth) / 2)]);
@@ -336,13 +360,13 @@ var Maze = React.createClass({
 	},
 	buildHorTunnel: function(squares, point1, point2) {
 		for (var k = Math.min(point1[1], point2[1]); k <= Math.max(point1[1], point2[1]); k++) {
-			squares[point1[0]].splice(k, 1, <div key={[point1[0], k]} className="room"></div>);
+			squares[point1[0]].splice(k, 1, <div key={[point1[0], k]} id="room" className="dark"></div>);
 		}
 		return squares;
 	},
 	buildVerTunnel: function(squares, point1, point2) {
 		for (var k = Math.min(point1[0], point2[0]); k <= Math.max(point1[0], point2[0]); k++) {
-			squares[k].splice(point2[1], 1, <div key={[k, point2[1]]} className="room"></div>);
+			squares[k].splice(point2[1], 1, <div key={[k, point2[1]]} id="room" className="dark"></div>);
 		}
 		return squares;
 	},
@@ -351,9 +375,9 @@ var Maze = React.createClass({
 		while (condition) {
 			var xPosition = Math.floor(Math.random() * width);
 			var yPosition = Math.floor(Math.random() * height);
-			if (squares[xPosition][yPosition].props.className == "room") {
+			if (squares[xPosition][yPosition].props.id == "room") {
 				if (item == "player") {
-					squares[xPosition].splice(yPosition, 1, <div key={[xPosition, yPosition]} className="player"></div>);
+					squares[xPosition].splice(yPosition, 1, <div key={[xPosition, yPosition]} id="player" className="dark"></div>);
 					/* Moving this to componentDidMount doesn't work, playerPosition wouldn't be defined yet */
 					if (xPosition > 15) {
 						window.onload = function() {
@@ -363,9 +387,9 @@ var Maze = React.createClass({
 					var playerXPosition = xPosition; //because xPosition will be overridden for weapon and stairs genetaion
 					var playerYPosition = yPosition;
 				} else if (item == "stairs" && this.props.dungeon < 5) {
-					squares[xPosition].splice(yPosition, 1, <div key={[xPosition, yPosition]} className="stairs"></div>);
+					squares[xPosition].splice(yPosition, 1, <div key={[xPosition, yPosition]} id="stairs" className="dark"></div>);
 				} else if (item == "weapon") {
-					squares[xPosition].splice(yPosition, 1, <div key={[xPosition, yPosition]} className="weapon"></div>);
+					squares[xPosition].splice(yPosition, 1, <div key={[xPosition, yPosition]} id="weapon" className="dark"></div>);
 				}
 				condition = false;
 			}
@@ -378,8 +402,8 @@ var Maze = React.createClass({
 		while (enemiesToPlace > 0) {
 			var enemyXPosition = Math.floor(Math.random() * width);
 			var enemyYPosition = Math.floor(Math.random() * height);
-			if (squares[enemyXPosition][enemyYPosition].props.className == "room") {
-				squares[enemyXPosition].splice(enemyYPosition, 1, <div key={[enemyXPosition, enemyYPosition]} className="enemy"></div>);
+			if (squares[enemyXPosition][enemyYPosition].props.id == "room") {
+				squares[enemyXPosition].splice(enemyYPosition, 1, <div key={[enemyXPosition, enemyYPosition]} id="enemy" className="dark"></div>);
 				enemies.push({enemyHealth: (this.props.dungeon) * 15 + Math.floor(Math.random() * 5),
 							location: [enemyXPosition, enemyYPosition]});
 				enemiesToPlace--;
@@ -391,9 +415,9 @@ var Maze = React.createClass({
 			while (bossCondition) {
 				var bossXPosition = Math.floor(Math.random() * width);
 				var bossYPosition = Math.floor(Math.random() * height);
-				if (squares[bossXPosition][bossYPosition].props.className == "room" && squares[bossXPosition + 1][bossYPosition].props.className == "room" && squares[bossXPosition][bossYPosition + 1].props.className == "room" && squares[bossXPosition + 1][bossYPosition + 1].props.className == "room") {
-					squares[bossXPosition].splice(bossYPosition, 2, <div key={[bossXPosition, bossYPosition]} className="boss"></div>, <div key={[bossXPosition, bossYPosition + 1]} className="boss"></div>);
-					squares[bossXPosition + 1].splice(bossYPosition, 2, <div key={[bossXPosition + 1, bossYPosition]} className="boss"></div>, <div key={[bossXPosition + 1, bossYPosition + 1]} className="boss"></div>);
+				if (squares[bossXPosition][bossYPosition].props.id == "room" && squares[bossXPosition + 1][bossYPosition].props.id == "room" && squares[bossXPosition][bossYPosition + 1].props.id == "room" && squares[bossXPosition + 1][bossYPosition + 1].props.id == "room") {
+					squares[bossXPosition].splice(bossYPosition, 2, <div key={[bossXPosition, bossYPosition]} id="boss" className="dark"></div>, <div key={[bossXPosition, bossYPosition + 1]} id="boss" className="dark"></div>);
+					squares[bossXPosition + 1].splice(bossYPosition, 2, <div key={[bossXPosition + 1, bossYPosition]} id="boss" className="dark"></div>, <div key={[bossXPosition + 1, bossYPosition + 1]} id="boss" className="dark"></div>);
 					bossCondition = false;
 				}
 			}
@@ -407,8 +431,8 @@ var Maze = React.createClass({
 		while (healthToPlace > 0) {
 			var healthXPosition = Math.floor(Math.random() * width);
 			var healthYPosition = Math.floor(Math.random() * height);
-			if (squares[healthXPosition][healthYPosition].props.className == "room") {
-				squares[healthXPosition].splice(healthYPosition, 1, <div key={[healthXPosition, healthYPosition]} className="health"></div>);
+			if (squares[healthXPosition][healthYPosition].props.id == "room") {
+				squares[healthXPosition].splice(healthYPosition, 1, <div key={[healthXPosition, healthYPosition]} id="health" className="dark"></div>);
 				healthToPlace--;
 			}
 		}
@@ -428,7 +452,7 @@ var Information = React.createClass({
 	render: function() {
 		return (
 			<ul>
-				<li>Kill the boss in dungeon 4, the boss is the giant red square.</li>
+				<li>Kill the boss in dungeon 5, the boss is the giant red square.</li>
 				<li>More info will be added.</li>
 			</ul>
 		);
