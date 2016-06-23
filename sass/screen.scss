@@ -56,12 +56,12 @@ body {
 $items: passage player enemy health stairs weapon boss wall;
 
 @each $item in $items {
-	.#{$item} {
+	##{$item} {
 		@include cell($item);
 	}
 }
 
-.room {
+#room {
 	width: 15px;
 	height: 15px;
 }
@@ -102,6 +102,10 @@ $items: passage player enemy health stairs weapon boss wall;
 			cursor: pointer;
 		}
 	}
+}
+
+.dark {
+	background-image: url("icons/dark.jpg") !important;
 }
 
 .footer {

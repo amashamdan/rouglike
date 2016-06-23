@@ -46,7 +46,7 @@ body {
 }
 
 /* line 59, ../sass/screen.scss */
-.passage {
+#passage {
   width: 15px;
   height: 15px;
   background-image: url("icons/passage.svg");
@@ -54,7 +54,7 @@ body {
 }
 
 /* line 59, ../sass/screen.scss */
-.player {
+#player {
   width: 15px;
   height: 15px;
   background-image: url("icons/player.svg");
@@ -62,7 +62,7 @@ body {
 }
 
 /* line 59, ../sass/screen.scss */
-.enemy {
+#enemy {
   width: 15px;
   height: 15px;
   background-image: url("icons/enemy.svg");
@@ -70,7 +70,7 @@ body {
 }
 
 /* line 59, ../sass/screen.scss */
-.health {
+#health {
   width: 15px;
   height: 15px;
   background-image: url("icons/health.svg");
@@ -78,7 +78,7 @@ body {
 }
 
 /* line 59, ../sass/screen.scss */
-.stairs {
+#stairs {
   width: 15px;
   height: 15px;
   background-image: url("icons/stairs.svg");
@@ -86,7 +86,7 @@ body {
 }
 
 /* line 59, ../sass/screen.scss */
-.weapon {
+#weapon {
   width: 15px;
   height: 15px;
   background-image: url("icons/weapon.svg");
@@ -94,7 +94,7 @@ body {
 }
 
 /* line 59, ../sass/screen.scss */
-.boss {
+#boss {
   width: 15px;
   height: 15px;
   background-image: url("icons/boss.svg");
@@ -102,7 +102,7 @@ body {
 }
 
 /* line 59, ../sass/screen.scss */
-.wall {
+#wall {
   width: 15px;
   height: 15px;
   background-image: url("icons/wall.svg");
@@ -110,7 +110,7 @@ body {
 }
 
 /* line 64, ../sass/screen.scss */
-.room {
+#room {
   width: 15px;
   height: 15px;
 }
@@ -161,17 +161,22 @@ body {
 }
 
 /* line 107, ../sass/screen.scss */
+.dark {
+  background-image: url("icons/dark.jpg") !important;
+}
+
+/* line 111, ../sass/screen.scss */
 .footer {
   font-size: 0.75em;
   color: white;
   display: flex;
   flex-wrap: wrap;
 }
-/* line 112, ../sass/screen.scss */
+/* line 116, ../sass/screen.scss */
 .footer a {
   color: white;
 }
-/* line 115, ../sass/screen.scss */
+/* line 119, ../sass/screen.scss */
 .footer div {
   width: 50%;
 }
