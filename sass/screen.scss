@@ -2,20 +2,17 @@
  * In this file you should write your main styles. (or centralize your imports)
  * Import this file using the following HTML or equivalent:
  * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
-$maze-color: gray;
 $maze-border-color: black;
 $room-color: white;
-$passage-color: white;
-$player-color: red;
-$enemy-color: black;
-$health-color: green;
-$weapon-color: orange;
-$stairs-color: #A020F0;
-$boss-color: #8B6508;
 $layer-color: black;
 $intial-message-color: #EA7501;
 $final-meesage-color: #B14B4B;
 $message-text-color: white;
+
+body {
+	background-image: url("icons/wall.jpg");
+	color: white;
+}
 
 #container {
 	width: 1100px;
@@ -46,28 +43,27 @@ $message-text-color: white;
 	flex-wrap: wrap;
 	overflow-y: hidden;
 	border: 5px solid $maze-border-color;
+	background-color: $room-color;
 }
 
-@mixin cell($color) {
+@mixin cell($type) {
 	width: 15px;
 	height: 15px;
-	background-color: $color;
+	background-image: url('icons/#{$type}.svg');
+	background-size: 15px 15px;
 }
 
-.wall {
-	@include cell($maze-color);
-	font-size: 5px;
-}
+$items: passage player enemy health stairs weapon boss wall;
 
-$items: room passage player enemy health stairs weapon boss;
-$colors: $room-color $passage-color $player-color $enemy-color $health-color $stairs-color $weapon-color $boss-color;
-
-$items-colors: zip($items, $colors);
-
-@each $item in $items-colors {
-	.#{nth($item, 1)} {
-		@include cell(nth($item, 2));
+@each $item in $items {
+	.#{$item} {
+		@include cell($item);
 	}
+}
+
+.room {
+	width: 15px;
+	height: 15px;
 }
 
 .layer {
@@ -110,8 +106,15 @@ $items-colors: zip($items, $colors);
 
 .footer {
 	font-size: 0.75em;
-	color: gray;
+	color: white;
+	display: flex;
+	flex-wrap: wrap;
 	a {
-		color: gray;
+		color: white;
+	}
+	div {
+		width: 50%;
 	}
 }
+
+
