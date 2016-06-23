@@ -40,10 +40,11 @@ var GameArea = React.createClass({
 	displayMessage: function(result) {
 		document.body.style.overflow = "hidden";
 		this.setState({gameProgress: false, messageStatus: true, message: this.state.messages[result]});
+		this.setState({health: 100, dungeon: 1, selectedWeapon: "Needle", weaponDamage: 2, xp: 60, xpMultiplier: 1, level: 1});
 	},
 	handleClick: function() {
 		document.body.style.overflow = "auto";
-		this.setState({messageStatus: false, health: 100, dungeon: 1, selectedWeapon: "Needle", weaponDamage: 2, xp: 60, xpMultiplier: 1, level: 1, gameProgress: true});
+		this.setState({gameProgress: true, messageStatus: false});
 		this.refs['maze'].newGrid();
 	},
 	render: function() {
@@ -100,6 +101,7 @@ var Maze = React.createClass({
 		return ({squares: gridData[0], playerPosition: gridData[1], enemies: gridData[2], winAudio: winAudio, healthAudio: healthAudio, weaponAudio: weaponAudio, stairsAudio: stairsAudio, loseAudio: loseAudio});
 	},
 	newGrid: function() {
+		console.log(this.props.dungeon);
 		var newGrid = this.initializeGrid();
 		var squares = newGrid[0];
 		var newXPosition = newGrid[1][0];
