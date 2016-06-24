@@ -40,18 +40,22 @@ var GameArea = React.createClass({
 	displayMessage: function(result) {
 		document.body.style.overflow = "hidden";
 		this.setState({gameProgress: false, messageStatus: true, message: this.state.messages[result]});
-		this.setState({health: 100, dungeon: 1, selectedWeapon: "Needle", weaponDamage: 2, xp: 60, xpMultiplier: 1, level: 1});
+		this.setState({health: 100, dungeon: 1, selectedWeapon: "Needle", weaponDamage: 2, xp: 60, xpMultiplier: 1, level: 1, dark: true});
 	},
 	handleClick: function() {
 		document.body.style.overflow = "auto";
 		this.setState({gameProgress: true, messageStatus: false});
 		this.refs['maze'].newGrid();
 	},
+	toggleLights: function() {
+		this.setState({dark: !this.state.dark});
+		this.refs['maze'].toggleTiles();
+	},
 	render: function() {
 		return (
 			<div>
 				<h3>Roguelike Dungeon Crawler (ReactJS & Sass)</h3>
-				<Dashboard health={this.state.health} weapon={this.state.selectedWeapon} dungeon={this.state.dungeon} attack={this.state.weaponDamage} xp={this.state.xp} level={this.state.level} />
+				<Dashboard health={this.state.health} weapon={this.state.selectedWeapon} dungeon={this.state.dungeon} attack={this.state.weaponDamage} xp={this.state.xp} level={this.state.level} toggleLights={this.toggleLights}/>
 				<Maze ref="maze" health={this.state.health} increaseHealth={this.increaseHealth} upgradeWeapon={this.upgradeWeapon} incrementDungeon={this.incrementDungeon} dungeon={this.state.dungeon} weaponDamage={this.state.weaponDamage} updateXp={this.updateXp} displayMessage={this.displayMessage} gameProgress={this.state.gameProgress} dark={this.state.dark}/>
 				<Information />
 				<Message handleClick={this.handleClick} status={this.state.messageStatus} message={this.state.message} />
@@ -62,10 +66,6 @@ var GameArea = React.createClass({
 
 /* This components contains stats and controls of the game. The stats include health, weapon used, attack power, level, XP points needed to reach nect level and the dungeon number. Controls include the button to toggle visibility. */
 var Dashboard = React.createClass({
-	lightsClick: function() {
-		console.log('fff');
-		//document.getElementById("maze").scrollTop = 10;
-	},
 	scrollDown: function() {
 		document.getElementById("maze").scrollTop = 450;
 	},
@@ -81,7 +81,7 @@ var Dashboard = React.createClass({
 				<div className="control">Level: {this.props.level}</div>
 				<div className="control">XP to next level: {this.props.xp}</div>
 				<div className="control">Dungeon: {this.props.dungeon}</div>
-				<button>Turn lights on</button>
+				<button onClick={this.props.toggleLights}>Toggle Lights</button>
 				<button onClick={this.scrollUp}>Scroll Up</button>
 				<button onClick={this.scrollDown}>Scroll Down</button>
 			</div>
@@ -109,15 +109,6 @@ var Maze = React.createClass({
 		document.getElementById("maze").scrollTop = (newXPosition - 15) * 15;
 		this.setState({squares: squares, playerPosition: [newXPosition, newYPosition], enemies: enemies});
 	},
-	/*componentDidMount: function() {
-		var row = this.playerPosition[0];
-		var colomn = this.playerPosition[1];
-		for (var i = row - 3; i <= row + 3; i++) {
-			for (var k = colomn - 3; i <= colomn + 3; k++) {
-				console.log(i, k);
-			}
-		}
-	},*/
 	initializeGrid: function() {
 		var width = 60;
 		var height = 60;
@@ -134,36 +125,52 @@ var Maze = React.createClass({
 		squares = enemyData[0];
 		var enemies = enemyData[1];
 		squares = this.generateHealth(squares, width,height);
-		squares = this.playerVisibility(squares, playerPosition, width, height);
+		if (this.props.dark) {
+			squares = this.playerVisibility(squares, playerPosition, width, height);
+		}
 		return [squares, playerPosition, enemies];
 	},
 	componentDidMount: function() {
 		window.addEventListener('keydown', this.handlepress);
 	},
-	playerVisibility: function(squares, playerPosition, width, height) {
-		if (this.props.dark) {
-			for (var i = 0; i < height; i++) {
-				for (var k = 0; k < width; k++) {
-					var tile = squares[i][k].props.id;
-					squares[i].splice(k, 1, <div key={[i, k]} id={tile} className="dark"></div>)		
-				}
-			}
-			// turn light on 
-			var row = playerPosition[0];
-			var colomn = playerPosition[1];
-			var c = 5;
-			if (row - 5 < 0) {
-				c -= Math.abs(row - 5);
-			}
-			for (var i = Math.max(0, row - 5); i <= Math.min(row + 5, 59); i++) {
-				for (var k = Math.max(colomn - Math.abs(5 - Math.abs(c)), 0); k <= Math.min(colomn + Math.abs(5-Math.abs(c)), 59); k++) {
+	toggleTiles: function() {
+		var squares = this.state.squares;
+		/* props.dark is not updated */
+		if (!this.props.dark) {
+			squares = this.playerVisibility(squares, this.state.playerPosition, 60, 60);
+		} else {
+			for (var i = 0; i < 60; i++) {
+				for (var k = 0; k < 60; k++) {
 					var tile = squares[i][k].props.id;
 					squares[i].splice(k, 1, <div key={[i, k]} id={tile}></div>)
 				}
-				c--;
 			}
-			return squares;
 		}
+		this.setState({squares: squares});
+	},
+	playerVisibility: function(squares, playerPosition, width, height) {
+		for (var i = 0; i < height; i++) {
+			for (var k = 0; k < width; k++) {
+				var tile = squares[i][k].props.id;
+				squares[i].splice(k, 1, <div key={[i, k]} id={tile} className="dark"></div>)		
+			}
+		}
+		// turn light on 
+		var row = playerPosition[0];
+		var colomn = playerPosition[1];
+		var c = 5;
+		if (row - 5 < 0) {
+			c -= Math.abs(row - 5);
+		}
+		for (var i = Math.max(0, row - 5); i <= Math.min(row + 5, 59); i++) {
+			for (var k = Math.max(colomn - Math.abs(5 - Math.abs(c)), 0); k <= Math.min(colomn + Math.abs(5-Math.abs(c)), 59); k++) {
+				var tile = squares[i][k].props.id;
+				squares[i].splice(k, 1, <div key={[i, k]} id={tile}></div>)
+			}
+			c--;
+		}
+
+		return squares;
 	},
 	handlepress: function(e) {
 		if (this.props.gameProgress) {
@@ -282,7 +289,10 @@ var Maze = React.createClass({
 	movePlayer: function(squares, playerXPosition, playerYPosition, newXPosition, newYPosition) {
 		squares[playerXPosition].splice(playerYPosition, 1, <div key={[playerXPosition, playerYPosition]} id="room"></div>);
 		squares[newXPosition].splice(newYPosition, 1, <div key={[newXPosition, newYPosition]} id="player"></div>);
-		squares = this.playerVisibility(squares, [newXPosition, newYPosition], 60, 60);
+		if (this.props.dark) {
+			squares = this.playerVisibility(squares, [newXPosition, newYPosition], 60, 60);
+		}
+	
 		return squares;
 	},
 	generateGrid: function(width, height) {
