@@ -143,11 +143,13 @@ var Maze = React.createClass({
 	playerVisibility: function(squares, playerPosition, width, height) {
 		for (var i = 0; i < height; i++) {
 			for (var k = 0; k < width; k++) {
-				var tile = squares[i][k].props.id;
-				squares[i].splice(k, 1, <div key={[i, k]} id={tile} className="dark"></div>)		
+				if (squares[i][k].props.className != "dark"){
+					var tile = squares[i][k].props.id;
+					squares[i].splice(k, 1, <div key={[i, k]} id={tile} className="dark"></div>);
+				}		
 			}
 		}
-		// turn light on 
+		
 		var row = playerPosition[0];
 		var colomn = playerPosition[1];
 		var c = 5;
