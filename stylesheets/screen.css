@@ -166,17 +166,26 @@ body {
 }
 
 /* line 111, ../sass/screen.scss */
+.information {
+  font-size: 0.8em;
+}
+/* line 113, ../sass/screen.scss */
+.information a {
+  color: white;
+}
+
+/* line 118, ../sass/screen.scss */
 .footer {
   font-size: 0.75em;
   color: white;
   display: flex;
   flex-wrap: wrap;
 }
-/* line 116, ../sass/screen.scss */
+/* line 123, ../sass/screen.scss */
 .footer a {
   color: white;
 }
-/* line 119, ../sass/screen.scss */
+/* line 126, ../sass/screen.scss */
 .footer div {
   width: 50%;
 }

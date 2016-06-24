@@ -108,6 +108,13 @@ $items: passage player enemy health stairs weapon boss wall;
 	background-image: url("icons/dark.jpg") !important;
 }
 
+.information {
+	font-size: 0.8em;
+	a {
+		color: white;
+	}
+}
+
 .footer {
 	font-size: 0.75em;
 	color: white;
