@@ -66,12 +66,6 @@ var GameArea = React.createClass({
 
 /* This components contains stats and controls of the game. The stats include health, weapon used, attack power, level, XP points needed to reach nect level and the dungeon number. Controls include the button to toggle visibility. */
 var Dashboard = React.createClass({
-	scrollDown: function() {
-		document.getElementById("maze").scrollTop = 450;
-	},
-	scrollUp: function() {
-		document.getElementById("maze").scrollTop = -450;
-	},
 	render: function() {
 		return (
 			<div className="controls">
@@ -82,8 +76,6 @@ var Dashboard = React.createClass({
 				<div className="control">XP to next level: {this.props.xp}</div>
 				<div className="control">Dungeon: {this.props.dungeon}</div>
 				<button onClick={this.props.toggleLights}>Toggle Lights</button>
-				<button onClick={this.scrollUp}>Scroll Up</button>
-				<button onClick={this.scrollDown}>Scroll Down</button>
 			</div>
 		);
 	}
@@ -472,13 +464,14 @@ var Maze = React.createClass({
 var Information = React.createClass({
 	render: function() {
 		return (
-			<ul>
+			<ul className="information">
 				<li>To win the game, find the boss in dungeon 5 and kill it.</li>
 				<li>Look for the stairs to go to other dungeons.</li>
 				<li>To beat the boss, you need to be an experienced fighter, kill enemies to gain more experience.</li>
 				<li>Fighting enemies can be harmful, look for health items and collect them to recover.</li>
 				<li>As you get closer to the boss, it becomes harder to kill enemies. You should always look for better weapons. There is one in each dungeon.</li>
 				<li>If it's hard for you to find your way in the darkness, you can click Toggle Lights and take a peak.</li>
+				<li>For more information visit <a href="https://github.com/amashamdan/rouglike" target="blank">this link.</a></li>
 			</ul>
 		);
 	}
