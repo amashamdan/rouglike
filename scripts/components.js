@@ -473,8 +473,12 @@ var Information = React.createClass({
 	render: function() {
 		return (
 			<ul>
-				<li>Kill the boss in dungeon 5, the boss is the giant red square.</li>
-				<li>More info will be added.</li>
+				<li>To win the game, find the boss in dungeon 5 and kill it.</li>
+				<li>Look for the stairs to go to other dungeons.</li>
+				<li>To beat the boss, you need to be an experienced fighter, kill enemies to gain more experience.</li>
+				<li>Fighting enemies can be harmful, look for health items and collect them to recover.</li>
+				<li>As you get closer to the boss, it becomes harder to kill enemies. You should always look for better weapons. There is one in each dungeon.</li>
+				<li>If it's hard for you to find your way in the darkness, you can click Toggle Lights and take a peak.</li>
 			</ul>
 		);
 	}
