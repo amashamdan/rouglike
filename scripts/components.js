@@ -152,6 +152,9 @@ var Maze = React.createClass({
 			var row = playerPosition[0];
 			var colomn = playerPosition[1];
 			var c = 5;
+			if (row - 5 < 0) {
+				c -= Math.abs(row - 5);
+			}
 			for (var i = Math.max(0, row - 5); i <= Math.min(row + 5, 59); i++) {
 				for (var k = Math.max(colomn - Math.abs(5 - Math.abs(c)), 0); k <= Math.min(colomn + Math.abs(5-Math.abs(c)), 59); k++) {
 					var tile = squares[i][k].props.id;
