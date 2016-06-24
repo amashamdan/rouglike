@@ -12,7 +12,7 @@ var GameArea = React.createClass({
 				dungeon: 1, selectedWeapon: "Needle", weaponDamage: 2, xp: 60, xpMultiplier: 1, level: 1, messageStatus: false,
 				messages: {win: "Good for you! You beat the big boss.",
 						loss: "Naaah... You got killed, get some practice and try again."},
-				message: "", gameProgress: true});
+				message: "", gameProgress: true, dark: true});
 	},
 	increaseHealth: function(increment = 20) {
 		if (increment == 20) {
@@ -52,7 +52,7 @@ var GameArea = React.createClass({
 			<div>
 				<h3>Roguelike Dungeon Crawler (ReactJS & Sass)</h3>
 				<Dashboard health={this.state.health} weapon={this.state.selectedWeapon} dungeon={this.state.dungeon} attack={this.state.weaponDamage} xp={this.state.xp} level={this.state.level} />
-				<Maze ref="maze" health={this.state.health} increaseHealth={this.increaseHealth} upgradeWeapon={this.upgradeWeapon} incrementDungeon={this.incrementDungeon} dungeon={this.state.dungeon} weaponDamage={this.state.weaponDamage} updateXp={this.updateXp} displayMessage={this.displayMessage} gameProgress={this.state.gameProgress}/>
+				<Maze ref="maze" health={this.state.health} increaseHealth={this.increaseHealth} upgradeWeapon={this.upgradeWeapon} incrementDungeon={this.incrementDungeon} dungeon={this.state.dungeon} weaponDamage={this.state.weaponDamage} updateXp={this.updateXp} displayMessage={this.displayMessage} gameProgress={this.state.gameProgress} dark={this.state.dark}/>
 				<Information />
 				<Message handleClick={this.handleClick} status={this.state.messageStatus} message={this.state.message} />
 			</div>
@@ -134,7 +134,13 @@ var Maze = React.createClass({
 		squares = enemyData[0];
 		var enemies = enemyData[1];
 		squares = this.generateHealth(squares, width,height);
-
+		squares = this.playerVisibility(squares, playerPosition);
+		return [squares, playerPosition, enemies];
+	},
+	componentDidMount: function() {
+		window.addEventListener('keydown', this.handlepress);
+	},
+	playerVisibility: function(squares, playerPosition) {
 		// turn light on 
 		var row = playerPosition[0];
 		var colomn = playerPosition[1];
@@ -147,13 +153,7 @@ var Maze = React.createClass({
 			}
 			c--;
 		}
-
-		
-
-		return [squares, playerPosition, enemies];
-	},
-	componentDidMount: function() {
-		window.addEventListener('keydown', this.handlepress);
+		return squares;
 	},
 	handlepress: function(e) {
 		if (this.props.gameProgress) {
