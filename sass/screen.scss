@@ -2,130 +2,182 @@
  * In this file you should write your main styles. (or centralize your imports)
  * Import this file using the following HTML or equivalent:
  * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
-$maze-border-color: black;
-$room-color: white;
-$layer-color: black;
-$intial-message-color: #EA7501;
-$final-meesage-color: #B14B4B;
-$message-text-color: white;
-
+/* line 12, ../sass/screen.scss */
 body {
-	background-image: url("icons/wall.jpg");
-	color: white;
+  background-image: url("http://i446.photobucket.com/albums/qq186/amashamdan2/rouglike/wall_zpsbw4fsemw.jpg");
+  color: white;
 }
 
+/* line 17, ../sass/screen.scss */
 #container {
-	width: 1100px;
-	margin: 0 auto;
-	font-family: 'Titillium Web', sans-serif;
-	h3 {
-		text-align: center;
-	}
+  width: 1100px;
+  margin: 0 auto;
+  font-family: 'Titillium Web', sans-serif;
+}
+/* line 21, ../sass/screen.scss */
+#container h3 {
+  text-align: center;
 }
 
+/* line 26, ../sass/screen.scss */
 .controls {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: center;
-	margin: 0 0 20px 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0 0 20px 0;
 }
 
+/* line 33, ../sass/screen.scss */
 .control {
-	width: 12.5%;
-	text-align: center;
+  width: 12.5%;
+  text-align: center;
 }
 
+/* line 38, ../sass/screen.scss */
 #maze {
-	width: 900px;
-	height: 450px;
-	margin: 0 auto;
-	display: flex;
-	flex-wrap: wrap;
-	overflow-y: hidden;
-	border: 5px solid $maze-border-color;
-	background-color: $room-color;
+  width: 900px;
+  height: 450px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  overflow-y: hidden;
+  border: 5px solid black;
+  background-color: white;
 }
 
-@mixin cell($type) {
-	width: 15px;
-	height: 15px;
-	background-image: url('icons/#{$type}.svg');
-	background-size: 15px 15px;
+/* line 59, ../sass/screen.scss */
+#player {
+  width: 15px;
+  height: 15px;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiB2aWV3Qm94PSIwIDAgMTA2LjEgMTA2LjEiPjxwYXRoIGQ9Ik05MC41IDE1LjVDNjkuOS01LjIgMzYuMi01LjIgMTUuNSAxNS41IC01LjIgMzYuMi01LjIgNjkuOSAxNS41IDkwLjVjMjAuNyAyMC43IDU0LjMgMjAuNyA3NSAwQzExMS4yIDY5LjkgMTExLjIgMzYuMiA5MC41IDE1LjV6TTg0LjggODQuOGMtMTcuNSAxNy41LTQ2IDE3LjUtNjMuNSAwIC0xNy41LTE3LjUtMTcuNS00NiAwLTYzLjVDMzguOCAzLjggNjcuMyAzLjggODQuOCAyMS4zIDEwMi4zIDM4LjggMTAyLjMgNjcuMyA4NC44IDg0Ljh6TTMzLjIgMzguN2MwLTMuNCAyLjgtNi4yIDYuMi02LjIgMy40IDAgNi4yIDIuOCA2LjIgNi4yIDAgMy40LTIuOCA2LjItNi4yIDYuMkMzNiA0NC45IDMzLjIgNDIuMSAzMy4yIDM4Ljd6TTYxLjQgMzguN2MwLTMuNCAyLjgtNi4yIDYuMi02LjIgMy40IDAgNi4yIDIuOCA2LjIgNi4yIDAgMy40LTIuOCA2LjItNi4yIDYuMlM2MS40IDQyLjEgNjEuNCAzOC43ek03NiA2NC4xYy0zLjggOC45LTEyLjggMTQuNi0yMi45IDE0LjYgLTEwLjMgMC0xOS40LTUuOC0yMy4xLTE0LjcgLTAuNi0xLjUgMC4xLTMuMyAxLjYtMy45IDAuNC0wLjIgMC44LTAuMiAxLjItMC4yIDEuMiAwIDIuMyAwLjcgMi44IDEuOSAyLjggNi43IDkuNyAxMSAxNy41IDExIDcuNyAwIDE0LjUtNC4zIDE3LjQtMTEgMC43LTEuNSAyLjQtMi4yIDMuOS0xLjZTNzYuNyA2Mi41IDc2IDY0LjF6IiBmaWxsPSIjMGY3MDBiIi8+PC9zdmc+");
+  background-size: 15px 15px;
 }
 
-$items: passage player enemy health stairs weapon boss wall;
-
-@each $item in $items {
-	##{$item} {
-		@include cell($item);
-	}
+/* line 59, ../sass/screen.scss */
+#enemy {
+  width: 15px;
+  height: 15px;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBkPSJtMjU2IDBjLTEzNi44IDAtMjQwIDk0LjctMjQwIDIyMC4zIDAgNDEgMTUuOCAxMzMuMiAxNi41IDEzNy4xIDIuNiAxNS4yIDE1LjcgMjYuNCAzMS4yIDI2LjYgNDQuNiAwLjUgNDguMiAxMy45IDQ4LjQgMjcuOXY1OC40YzAgMTUuOCAxMS41IDI5LjIgMjcuMSAzMS42IDAuOSAwLjEgOC45IDEuNCAyMC45IDIuOXYtMjQuNWMwLTguOCA3LjItMTYgMTYtMTZzMTYgNy4yIDE2IDE2djI4LjJjMTUuMyAxLjUgMzIgMi45IDQ4IDMuNXYtMzEuN2MwLTguOCA3LjItMTYgMTYtMTZzMTYgNy4yIDE2IDE2djMxLjZjMTUuNS0wLjYgMzIuNS0yLjEgNDgtMy42di0yOGMwLTguOCA3LjItMTYgMTYtMTZzMTYgNy4yIDE2IDE2djI0LjNjMTEuNy0xLjUgMTkuNi0yLjYgMjAuNi0yLjcgMTUuNy0yLjMgMjcuNC0xNS44IDI3LjQtMzEuN3YtNTUuMWMtMC4zLTE0LjIgNC42LTE5LjEgNi4zLTIwLjggNy4xLTcuMSAyMS41LTEwLjcgNDEuMS0xMC40IDE1LjggMC44IDI5LjUtMTEgMzIuMi0yNi42IDAuNy0zLjkgMTYuNS05Ni4xIDE2LjUtMTM3LjEgMC0xMjUuNi0xMDMuMi0yMjAuMy0yNDAtMjIwLjN6bS04MCAyODhjLTI2LjUgMC00OC0yMC45LTQ4LTQ2LjdzMjEuNS0zMy4zIDQ4LTMzLjMgNDggNy42IDQ4IDMzLjMtMjEuNSA0Ni43LTQ4IDQ2Ljd6bTEyMy44IDU5LjJjLTMgNC45LTguMiA3LjYtMTMuNiA3LjYtMi45IDAtNS44LTAuOC04LjQtMi40bC0yMS44LTEzLjUtMjEuOCAxMy41Yy03LjUgNC43LTE3LjQgMi40LTIyLTUuMS00LjctNy41LTIuNC0xNy40IDUuMS0yMmwzMC4yLTE4LjhjNS4yLTMuMiAxMS43LTMuMiAxNi45IDBsMzAuMiAxOC44YzcuNSA0LjcgOS44IDE0LjUgNS4xIDIyem0zNi4yLTU5LjJjLTI2LjUgMC00OC0yMC45LTQ4LTQ2LjdzMjEuNS0zMy4zIDQ4LTMzLjMgNDggNy42IDQ4IDMzLjMtMjEuNSA0Ni43LTQ4IDQ2Ljd6Ii8+PC9zdmc+");
+  background-size: 15px 15px;
 }
 
+/* line 59, ../sass/screen.scss */
+#health {
+  width: 15px;
+  height: 15px;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0OTAuMSA0OTAuMSIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiPjxzdHlsZT4uYXtmaWxsOiNEODAwMjc7fTwvc3R5bGU+PHBhdGggZD0iTTQ2OS4yIDAuNkgyMC44QzkuMyAwLjYgMCAxMCAwIDIxLjR2NDQ3LjRjMCAxMS40IDkuMyAyMC44IDIwLjggMjAuOGg0NDguNWMxMS40IDAgMTkuNy04LjMgMjAuOC0xOS43VjIxLjRDNDkwIDEwIDQ4MC43IDAuNiA0NjkuMiAwLjZ6TTQ0OC41IDQ0OS4xaC00MDd2LTQwN2g0MDYuOXY0MDdINDQ4LjV6IiBjbGFzcz0iYSIvPjxwYXRoIGQ9Ik0xMzUgMjY2LjRoODkuM3Y4OS4zYzAgMTEuNCA5LjMgMjAuOCAyMC44IDIwLjhzMjAuOC05LjMgMjAuOC0xOS43di05MC4zSDM1NWMxMS40IDAgMjAuOC05LjMgMjEuOC0yMC44IDAtMTEuNC05LjMtMjAuOC0yMC44LTIwLjhoLTkwLjN2LTg5LjNjMC0xMS40LTkuMy0yMC44LTIwLjgtMjAuOHMtMjAuOCA5LjMtMjAuOCAyMC44djg5LjNIMTM1Yy0xMS40IDAtMjAuOCA5LjMtMjAuOCAyMC44QzExNC4yIDI1Ny4yIDEyMy41IDI2Ni40IDEzNSAyNjYuNHoiIGNsYXNzPSJhIi8+PC9zdmc+");
+  background-size: 15px 15px;
+}
+
+/* line 59, ../sass/screen.scss */
+#stairs {
+  width: 15px;
+  height: 15px;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiB2aWV3Qm94PSIwIDAgNDg1LjEgNDg1LjEiPjxzdHlsZT4uYXtmaWxsOiM5MzNFQzU7fTwvc3R5bGU+PHBhdGggZD0iTTQ2MC41IDk1LjZoLTg4LjZjLTEzLjYgMC0yNC43IDExLTI0LjcgMjQuNnY2NEgyODMuMmMtMTMuNiAwLTI0LjcgMTEtMjQuNyAyNC42djY0SDE5NC42Yy0xMy42IDAtMjQuNyAxMS0yNC43IDI0LjZ2NjcuMWgtNjcuMWMtNi41IDAtMTIuOCAyLjYtMTcuNCA3LjIgLTQuNiA0LjYtNy4yIDEwLjktNy4yIDE3LjRsMCA1MS42YzAgMTMuNiAxMSAyNC43IDI0LjcgMjQuN2gzNTcuNmMxMy42IDAgMjQuNy0xMSAyNC43LTI0LjdWMTIwLjNDNDg1LjEgMTA2LjcgNDc0LjEgOTUuNiA0NjAuNSA5NS42eiIgY2xhc3M9ImEiLz48cGF0aCBkPSJNMzMwLjggMjQuNmMtNi4zLTYuNS0xNi43LTYuNi0yMy4yLTAuM0MyMDIuMSAxMjcgMTAxLjggMjI3LjMgNC44IDMyNC4zIDEuNyAzMjcuNCAwIDMzMS42IDAgMzM1Ljl2MTEyLjVjMCA5LjEgNy40IDE2LjQgMTYuNCAxNi40IDkuMSAwIDE2LjQtNy40IDE2LjQtMTYuNFYzNDIuN2M5NS40LTk1LjQgMTk0LjEtMTk0IDI5Ny42LTI5NC45QzMzNi45IDQxLjUgMzM3LjEgMzEuMSAzMzAuOCAyNC42eiIgY2xhc3M9ImEiLz48L3N2Zz4=");
+  background-size: 15px 15px;
+}
+
+/* line 59, ../sass/screen.scss */
+#weapon {
+  width: 15px;
+  height: 15px;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiB2aWV3Qm94PSIwIDAgOTI4IDkyOCI+PHN0eWxlPi5he2ZpbGw6IzBiMzE4YTt9PC9zdHlsZT48cGF0aCBkPSJNODM2LjUgODIwLjVjLTE0LjUgMTIuNC0yNC43IDI5LjgtMjQuNiA0OS40IDAuNSAyMi40IDE0LjIgNDQuNiAzNSA1My41IDcuMiAzLjEgMTUgNC42IDIyLjggNC42IDMyLjEgMCA1OC4yLTI2IDU4LjItNTguMiAwLTMyLjItMjYtNTguMi01OC4yLTU4LjIgLTEuNCAwLTIuOCAwLjEtNC4xIDAuMmwtOTYuOC05Ni44IDU2LjMtNTYuM2M2LjItNi4yIDYuMi0xNi40IDAtMjIuNmwtMjIuMy0yMi4yYy02LjItNi4yLTE2LjQtNi4yLTIyLjYgMGwtMTY2LjUgMTY2LjZjLTYuMiA2LjItNi4yIDE2LjQgMCAyMi42bDIyLjMgMjIuM2M2LjIgNi4yIDE2LjQgNi4yIDIyLjYgMGw1Ni4zLTU2LjMgNzkuNCA3OS40YzAuMS0wLjEgMC4xLTAuMiAwLjItMC4zIDAuNy0xIDEuNC0yLjEgMi4xLTMuMSAzLTQgNi4xLTcuNiA5LjQtMTAuNyA1LjgtNS40IDEyLjUtMTAuMyAxOS44LTEzLjcgNC44LTIuNSAxMC00LjUgMTUuMi02IDMuNy0xLjEgNS45LTEuNSA1LjktMS41cy0xLjkgMS4xLTUgMy4zQzg0MCA4MTcuNyA4MzguMiA4MTkuMSA4MzYuNSA4MjAuNXoiIGNsYXNzPSJhIi8+PHBhdGggZD0iTTY0LjQgMjg1LjRjMi43IDExLjIgOS4yIDIxLjIgMTguNCAyOC4ybDUzMS40IDQwMi41IDM2LTM2IC00MzAuMi00NTguOCA0NTguOCA0MzAuMiAzNy4yLTM3LjJMMzE2LjQgODAuN2MtNy4xLTkuNS0xNy4zLTE2LjEtMjguOS0xOC44bC0yNjkuMS02MS41Yy0xMC45LTIuNC0yMC42IDcuMy0xOCAxOC4yTDY0LjQgMjg1LjR6IiBjbGFzcz0iYSIvPjwvc3ZnPg==");
+  background-size: 15px 15px;
+}
+
+/* line 59, ../sass/screen.scss */
+#boss {
+  width: 15px;
+  height: 15px;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGlkPSJDYXBhXzEiIHZpZXdCb3g9IjAgMCA1NiA1NiIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiPjxwYXRoIGQ9Ik00Ni4zIDAuMWMtMC40LTAuMi0wLjgtMC4xLTEuMSAwLjJzLTAuNCAwLjctMC4yIDEuMWMwLjggMi4xIDAuOCAzLjggMC4xIDVDNDMuOSA4LjQgNDEuMiA4LjkgNDAuOCA5aC01VjUuM0MzNS44IDQgMzQuOCAzIDMzLjUgM0gyMi4xYy0xLjMgMC0yLjMgMS0yLjMgMi4zVjloLTQuNmMtMC40LTAuMS0zLjEtMC42LTQuMi0yLjYgLTAuNy0xLjMtMC43LTMgMC4xLTUgMC4xLTAuNCAwLTAuOC0wLjItMS4xIC0wLjMtMC4zLTAuNy0wLjQtMS4xLTAuMkM5LjEgMC40IDYgMi4zIDUuOSAxMy40IDUuOSAxMy42IDUuOCAxMy44IDUuOCAxNHYzM2MwIDIuOCAyLjIgNSA1IDVoM3YxLjdjMCAxLjMgMSAyLjMgMi4zIDIuM2gyMy40YzEuMyAwIDIuMy0xIDIuMy0yLjNWNTJoM2MyLjggMCA1LTIuMiA1LTVWMjEuNmwwLTAuNUM1MS40IDIuOSA0Ni44IDAuMyA0Ni4zIDAuMXpNMzguNiAxOC40YzAuMyAwLjQgMC4zIDEuMS0wLjIgMS40bC01IDRDMzMuMyAyMy45IDMzIDI0IDMyLjggMjRjLTAuMyAwLTAuNi0wLjEtMC44LTAuNCAtMC4zLTAuNC0wLjMtMS4xIDAuMi0xLjRsNS00QzM3LjYgMTcuOSAzOC4zIDE3LjkgMzguNiAxOC40ek0zOC44IDM5YzAgMC4xIDAgMC4yIDAgMC4zbC0yIDZDMzYuNiA0NS43IDM2LjMgNDYgMzUuOCA0NnMtMC44LTAuMy0wLjktMC43TDMzLjEgNDBoLTguNmwtMS44IDUuM0MyMi42IDQ1LjcgMjIuMyA0NiAyMS44IDQ2cy0wLjgtMC4zLTAuOS0wLjdsLTItNmMwLTAuMSAwLTAuMiAwLTAuMyAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwLTAuMSAwLTAuMiAwLjEtMC4zIDAgMCAwIDAgMCAwIDAtMC4xIDAuMS0wLjEgMC4xLTAuMiAwIDAgMC4xLTAuMSAwLjEtMC4xIDAgMCAwIDAgMCAwIDAuMS0wLjEgMC4yLTAuMSAwLjMtMC4yIDAgMCAwIDAgMC4xIDBDMTkuNiAzOCAxOS43IDM4IDE5LjggMzhoNCAxMCA0YzAuMSAwIDAuMiAwIDAuNCAwLjEgMCAwIDAgMCAwLjEgMCAwLjEgMCAwLjIgMC4xIDAuMyAwLjIgMCAwIDAgMCAwIDAgMCAwIDAuMSAwLjEgMC4xIDAuMSAwIDAuMSAwLjEgMC4xIDAuMSAwLjIgMCAwIDAgMCAwIDAgMCAwLjEgMC4xIDAuMiAwLjEgMC4zIDAgMCAwIDAgMCAwQzM4LjggMzkgMzguOCAzOSAzOC44IDM5ek0xOCAxOC40YzAuMy0wLjQgMS0wLjUgMS40LTAuMmw1IDRjMC40IDAuMyAwLjUgMSAwLjIgMS40QzI0LjQgMjMuOSAyNC4xIDI0IDIzLjggMjRjLTAuMiAwLTAuNC0wLjEtMC42LTAuMmwtNS00QzE3LjggMTkuNCAxNy43IDE4LjggMTggMTguNHpNMTUuNSAyMy41YzEuNyAxLjMgNC4xIDEuOCA2LjMgMS41IDAgMC4yIDAuMSAwLjQgMC4xIDAuNiAwIDEuOS0xLjYgMy41LTMuNSAzLjVzLTMuNS0xLjYtMy41LTMuNUMxNC44IDI0LjcgMTUuMSAyNCAxNS41IDIzLjV6TTM4LjMgMjljLTEuOSAwLTMuNS0xLjYtMy41LTMuNSAwLTAuMiAwLTAuNCAwLjEtMC42IDIuMiAwLjMgNC42LTAuMiA2LjMtMS41IDAuNCAwLjYgMC43IDEuMyAwLjcgMkM0MS44IDI3LjQgNDAuMyAyOSAzOC4zIDI5eiIgZmlsbD0iIzU5MDAwMCIvPjwvc3ZnPg==");
+  background-size: 15px 15px;
+}
+
+/* line 59, ../sass/screen.scss */
+#wall {
+  width: 15px;
+  height: 15px;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MjUuOSA1MjUuOSIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiPjxwYXRoIGQ9Ik05NS42IDMyOC43SDBWMTk3LjJoOTUuNlYzMjguN3pNMTMxLjUgMzI4LjdoMjYzVjE5Ny4yaC0yNjNMMTMxLjUgMzI4LjcgMTMxLjUgMzI4Ljd6TTI0NSAyOS45SDB2MTMxLjVoMjQ1VjI5Ljl6TTAgNDk2LjFoMjQ1VjM2NC42SDBWNDk2LjF6TTI4MC45IDI5Ljl2MTMxLjVoMjQ1VjI5LjlIMjgwLjl6TTI4MC45IDQ5Ni4xaDI0NVYzNjQuNkgyODAuOVY0OTYuMXpNNDMwLjMgMzI4LjdoOTUuNlYxOTcuMmgtOTUuNlYzMjguN3oiIGZpbGw9IiM4NTQ5MTgiLz48L3N2Zz4=");
+  background-size: 15px 15px;
+}
+
+/* line 64, ../sass/screen.scss */
 #room {
-	width: 15px;
-	height: 15px;
+  width: 15px;
+  height: 15px;
 }
 
+/* line 69, ../sass/screen.scss */
 .layer {
-	z-index: 1;
-	background-color: $layer-color;
-	opacity: 0.85;
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
+  z-index: 1;
+  background-color: black;
+  opacity: 0.85;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 @keyframes messageTransition {
-	from {background-color: $intial-message-color};
-	to {background-color: $final-meesage-color};
+  from {
+    background-color: #EA7501;
+  }
+  to {
+    background-color: #B14B4B;
+  }
 }
-
+/* line 85, ../sass/screen.scss */
 .message {
-	animation: messageTransition 5s ease;
-	background-color: $final-meesage-color;
-	text-align: center;
-	z-index: 2;
-	position: fixed;
-	width: 500px;
-	top: 200px;
-	left: calc((100% - 500px) / 2);
-	color: $message-text-color;
-	button {
-		background-color: $message-text-color;
-		color: $final-meesage-color;
-		margin: 10px 0 20px 0;
-		padding: 10px;
-		border: none;
-		&:hover {
-			cursor: pointer;
-		}
-	}
+  animation: messageTransition 5s ease;
+  background-color: #B14B4B;
+  text-align: center;
+  z-index: 2;
+  position: fixed;
+  width: 500px;
+  top: 200px;
+  left: calc((100% - 500px) / 2);
+  color: white;
+}
+/* line 95, ../sass/screen.scss */
+.message button {
+  background-color: white;
+  color: #B14B4B;
+  margin: 10px 0 20px 0;
+  padding: 10px;
+  border: none;
+}
+/* line 101, ../sass/screen.scss */
+.message button:hover {
+  cursor: pointer;
 }
 
+/* line 107, ../sass/screen.scss */
 .dark {
-	background-image: url("icons/dark.jpg") !important;
+  background-image: url("http://i446.photobucket.com/albums/qq186/amashamdan2/rouglike/dark_zpsj2hboqux.jpg") !important;
 }
 
+/* line 111, ../sass/screen.scss */
 .information {
-	font-size: 0.8em;
-	a {
-		color: white;
-	}
+  font-size: 0.8em;
+}
+/* line 113, ../sass/screen.scss */
+.information a {
+  color: white;
 }
 
+/* line 118, ../sass/screen.scss */
 .footer {
-	font-size: 0.75em;
-	color: white;
-	display: flex;
-	flex-wrap: wrap;
-	a {
-		color: white;
-	}
-	div {
-		width: 50%;
-	}
+  font-size: 0.75em;
+  color: white;
+  display: flex;
+  flex-wrap: wrap;
 }
-
-
+/* line 123, ../sass/screen.scss */
+.footer a {
+  color: white;
+}
+/* line 126, ../sass/screen.scss */
+.footer div {
+  width: 50%;
+}
